@@ -1,0 +1,71 @@
+{
+  "id": "token-action-hud-ed4e",
+  "title": "Token Action HUD Earthdawn",
+  "description": "Token Action HUD is a repositionable HUD of actions for a selected token",
+  "authors": [
+    {
+      "name": "Qrizzl",
+      "url": "https://github.com/ChristopherSD"
+    }
+  ],
+  "url": "This is auto replaced",
+  "flags": {},
+  "version": "This is auto replaced",
+  "compatibility": {
+    "minimum": "10",
+    "verified": "10.291"
+  },
+  "esmodules": [
+    "./scripts/token-action-hud-dnd5e.min.js"
+  ],
+  "scripts": [
+  ],
+  "styles": [
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "languages/en.json"
+    }
+  ],
+  "packs": [],
+  "relationships": {
+    "systems": [
+      {
+        "id": "earthdawn4e",
+        "type": "system",
+        "compatibility": [
+          {
+            "minimum": "0.8.0",
+            "verified": "0.8.0"
+          }
+        ]
+      }
+    ],
+    "requires": [
+      {
+        "id": "token-action-hud-core",
+        "type": "module",
+        "compatibility": [
+          {
+            "minimum": "1.4.0",
+            "maximum": "1.4",
+            "verified": "1.4.0"
+          }
+        ]
+      }
+    ],
+    "optional": [],
+    "flags": {
+      "optional": []
+    }
+  },
+  "socket": false,
+  "manifest": "This is auto replaced",
+  "download": "This is auto replaced",
+  "readme": "https://github.com/ChristopherSD/fvtt-token-action-hud-ed4e#readme",
+  "protected": false,
+  "coreTranslation": false,
+  "library": false
+}
