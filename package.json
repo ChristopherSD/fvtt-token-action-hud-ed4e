@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -wcm"
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.3",
+    "rollup": "^3.26.3",
+    "rollup-plugin-multi-entry": "^2.1.0"
+  }
+}
