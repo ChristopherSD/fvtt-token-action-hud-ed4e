@@ -7,5 +7,5 @@ Hooks.on('tokenActionHudCoreApiReady', async () => {
         requiredCoreModuleVersion: REQUIRED_CORE_MODULE_VERSION,
         SystemManager
     }
-    Hooks.call('requiredCoreModuleVersion', module);
+    Hooks.call('tokenActionHudSystemReady', module);
 })

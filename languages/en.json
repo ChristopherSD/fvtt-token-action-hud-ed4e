@@ -1,5 +1,10 @@
 {
   "tokenActionHud": {
-    "ed4e": {}
+    "ed4e": {
+      "general": "General",
+      "tooltips": {
+        "attributeTest": "Roll a {attribute} test."
+      }
+    }
   }
 }

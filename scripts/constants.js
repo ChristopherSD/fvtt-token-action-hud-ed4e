@@ -73,7 +73,8 @@ export const PROFICIENCY_LEVEL_ICON = {
 }
 
 export const GROUP = {
-    _1stLevelSpells: { id: '1st-level-spells', name: 'tokenActionHud.dnd5e.1stLevelSpells', type: 'system' },
+    attributes: { id: 'attributes', name: 'earthdawn.a.attributes', type: 'system' }
+    /*_1stLevelSpells: { id: '1st-level-spells', name: 'tokenActionHud.dnd5e.1stLevelSpells', type: 'system' },
     _2ndLevelSpells: { id: '2nd-level-spells', name: 'tokenActionHud.dnd5e.2ndLevelSpells', type: 'system' },
     _3rdLevelSpells: { id: '3rd-level-spells', name: 'tokenActionHud.dnd5e.3rdLevelSpells', type: 'system' },
     _4thLevelSpells: { id: '4th-level-spells', name: 'tokenActionHud.dnd5e.4thLevelSpells', type: 'system' },
@@ -133,5 +134,5 @@ export const GROUP = {
     tools: { id: 'tools', name: 'ITEM.TypeToolPl', type: 'system' },
     unequipped: { id: 'unequipped', name: 'DND5E.Unequipped', type: 'system' },
     utility: { id: 'utility', name: 'tokenActionHud.utility', type: 'system' },
-    weapons: { id: 'weapons', name: 'ITEM.TypeWeaponPl', type: 'system' }
+    weapons: { id: 'weapons', name: 'ITEM.TypeWeaponPl', type: 'system' }*/
 }

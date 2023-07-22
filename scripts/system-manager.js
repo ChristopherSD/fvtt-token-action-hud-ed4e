@@ -21,11 +21,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) =>{
 
         /** @override */
         getAvailableRollHandlers () {
-            const coreTitle = 'Core Earthdawn 4th Edition'
+            const coreTitle = 'Core Earthdawn 4th Edition';
             const choices = {
                 core: coreTitle
-            }
-            return choices
+            };
+            return choices;
         }
 
         /** @override */
@@ -37,6 +37,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) =>{
                     rollHandler = new Core();
                     break;
             }
+
+            return rollHandler;
         }
 
         /** @override */
