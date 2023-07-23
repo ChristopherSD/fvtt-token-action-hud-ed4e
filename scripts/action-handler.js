@@ -211,15 +211,15 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         #buildFavoritesCategory() {
-            if (!settings.get("showFavorites")) return;
+            //if (!settings.get("showFavorites")) return;
 
-            const actor = token.actor;
-            if (['pc', 'npc'].indexOf(actor.type) < 0) return;
+            if ('creature' === this.actor.type) return;
 
-            const favoriteItems = actor.items.filter( e=> e.system.favorite === "true");
-
-            let result = this.initializeEmptyCategory('favorites');
-            result.name = this.i18n("earthdawn.h.hotlist");
+            const favoriteItems = Array.from(
+                this.actor.items.values()
+            ) .filter(
+                (e => 'true' === e.system.favorite)
+            );
 
             let favoriteActions = favoriteItems.map(e => {
                 try {
@@ -229,21 +229,23 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     if (e.system.hasOwnProperty("ranks")) {
                         name += " (" + e.system.ranks + ")";
                     }
-                    let encodedValue = [macroType, token.id, itemID].join(this.delimiter);
+                    let encodedValue = [macroType, this.token.id, itemID].join(this.delimiter);
                     return {name: name, id: itemID, encodedValue: encodedValue};
                 } catch (error) {
-                    Logger.error(e);
+                    error(e ?? 'No item in favorites');
                     return null;
                 }
             }).filter(s => !!s) // filter out nulls
                 .sort((a,b) => a.name.localeCompare(b.name));
-            let favoritesCategory = this.initializeEmptySubcategory();
-            favoritesCategory.actions = favoriteActions;
 
-            let favoritesTitle = this.i18n("earthdawn.h.hotlist");
-            this._combineSubcategoryWithCategory(result, favoritesTitle, favoritesCategory);
+            // create group data
+            const favoritesGroupData = {
+                id: 'favorites',
+                type: 'system'
+            };
 
-            return result;
+            // add actions to action list
+            this.addActions(favoriteActions, favoritesGroupData);
         }
 
         /**

@@ -1,6 +1,7 @@
 {
   "tokenActionHud": {
     "ed4e": {
+      "favorites": "Favorites",
       "general": "General",
       "system": "System",
       "tooltips": {

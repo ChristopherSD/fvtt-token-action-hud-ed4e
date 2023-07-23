@@ -23,6 +23,14 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     { ...groups.other, nestId: 'general_other'},
                     { ...groups.system, nestId: 'general_system'}
                 ]
+            },
+            {
+                nestId: 'favorites',
+                id: 'favorites',
+                name: coreModule.api.Utils.i18n('tokenActionHud.ed4e.favorites'),
+                groups: [
+                    { ...groups.favorites, nestId: 'favorites_favorites'}
+                ]
             }
         ],
         groups: groupsArray
