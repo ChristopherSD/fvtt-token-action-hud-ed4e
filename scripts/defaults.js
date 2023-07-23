@@ -19,7 +19,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 id: 'general',
                 name: coreModule.api.Utils.i18n('tokenActionHud.ed4e.general'),
                 groups: [
-                    { ...groups.attributes, nestId: 'general_attributes'}
+                    { ...groups.attributes, nestId: 'general_attributes'},
+                    { ...groups.other, nestId: 'general_other'},
+                    { ...groups.system, nestId: 'general_system'}
                 ]
             }
         ],

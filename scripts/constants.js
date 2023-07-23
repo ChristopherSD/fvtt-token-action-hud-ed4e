@@ -73,7 +73,9 @@ export const PROFICIENCY_LEVEL_ICON = {
 }
 
 export const GROUP = {
-    attributes: { id: 'attributes', name: 'earthdawn.a.attributes', type: 'system' }
+    attributes: { id: 'attributes', name: 'earthdawn.a.attributes', type: 'system' },
+    other: { id: 'other', name: 'earthdawn.o.other', type: 'system' },
+    system: { id: 'system', name: 'tokenActionHud.ed4e.system', type: 'system' },
     /*_1stLevelSpells: { id: '1st-level-spells', name: 'tokenActionHud.dnd5e.1stLevelSpells', type: 'system' },
     _2ndLevelSpells: { id: '2nd-level-spells', name: 'tokenActionHud.dnd5e.2ndLevelSpells', type: 'system' },
     _3rdLevelSpells: { id: '3rd-level-spells', name: 'tokenActionHud.dnd5e.3rdLevelSpells', type: 'system' },

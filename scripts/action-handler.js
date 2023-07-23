@@ -71,8 +71,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          */
         async #buildCharacterActions() {
             this.#buildGeneralCategory();
-            /*this._buildFavoritesCategory();
-            this._buildTalentsCategory();
+            this.#buildFavoritesCategory();
+            /*this._buildTalentsCategory();
             this._buildMatrixCategory();
             this._buildSkillsCategory();
             this._buildItemsCategory();
@@ -86,7 +86,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          * Build Multiple Token Actions
          * @private
          * @returns {object}
-        async _buildMultipleTokenActions () {
+         async _buildMultipleTokenActions () {
             this._buildGeneralCategory();
             this._buildFavoritesCategory();
             this._buildTalentsCategory();
@@ -144,28 +144,41 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             // Create actions for 'Other' category
             //**********************
 
-            /*otherCat.actions = [
+            let otherActions = [
                 {
-                    name: this.i18n("earthdawn.r.recovery"),
                     id: null,
+                    name: this.i18n.localize("earthdawn.r.recovery"),
                     encodedValue: ["recovery", this.token.id, "recovery"].join(this.delimiter),
-                },
+                    tooltip: this.i18n.localize("tokenActionHud.ed4e.tooltips.recoveryTest")
+                }
             ];
             if (!isCreature) {
-                otherCat.actions.push(
+                otherActions.push(
                     {
-                        name: this.i18n("earthdawn.n.newDay"),
                         id: null,
+                        name: this.i18n.localize("earthdawn.n.newDay"),
                         encodedValue: ["newday", this.token.id, "newday"].join(this.delimiter),
                     },
                     {
-                        name: this.i18n("earthdawn.h.halfMagic"),
                         id: null,
+                        name: this.i18n.localize("earthdawn.h.halfMagic"),
                         encodedValue: ["halfmagic", this.token.id, "halfmagic"].join(this.delimiter),
                     }
                 )
             }
 
+            // create group data
+            const otherGroupData = {
+                id: 'other',
+                type: 'system'
+            };
+
+            // add actions to action list
+            this.addActions(otherActions, otherGroupData);
+
+            //**********************
+            // Create actions for 'System' category
+            //**********************
 
             const mapPropToActionID = {
                 "earthdawn.u.useKarma": "usekarma"
@@ -176,27 +189,61 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             ]
             let systemActions = systemProperties.map( e => {
                     return {
-                        name: this.i18n(e), // localize in system
                         id: null,
+                        name: this.i18n.localize(e), // localize in system
                         encodedValue: ["toggle", this.token.id, mapPropToActionID[e]].join(this.delimiter),
-                        cssClass: this.actor.data["usekarma"] === "true" ? 'active' : ''
+                        cssClass: this.actor.system["usekarma"] === "true" ? 'active' : 'toggle'
                     }
                 }
             ).filter(s => !!s) // filter out nulls
                 .sort((a,b) => a.name.localeCompare(b.name));
-            let systemCat = this.initializeEmptySubcategory();
-            systemCat.actions = systemActions;
 
-            let result = this.initializeEmptyCategory('general');
-            result.name = this.i18n("tokenActionHud.general");
+            // create group data
+            const systemGroupData = {
+                id: 'system',
+                type: 'system'
+            };
 
-            this._combineSubcategoryWithCategory(result, this.i18n("earthdawn.a.attributes"), groupAttribute);
-            this._combineSubcategoryWithCategory(result, this.i18n("earthdawn.o.other"), otherCat);
+            // add actions to action list
             if (!isCreature) {
-                this._combineSubcategoryWithCategory(result, this.i18n("tokenActionHud.ed4e.systems"), systemCat);
+                this.addActions(systemActions, systemGroupData);
             }
+        }
 
-            return result;*/
+        #buildFavoritesCategory() {
+            if (!settings.get("showFavorites")) return;
+
+            const actor = token.actor;
+            if (['pc', 'npc'].indexOf(actor.type) < 0) return;
+
+            const favoriteItems = actor.items.filter( e=> e.system.favorite === "true");
+
+            let result = this.initializeEmptyCategory('favorites');
+            result.name = this.i18n("earthdawn.h.hotlist");
+
+            let favoriteActions = favoriteItems.map(e => {
+                try {
+                    let itemID = e.id;
+                    let macroType = e.type.toLowerCase();
+                    let name = e.name;
+                    if (e.system.hasOwnProperty("ranks")) {
+                        name += " (" + e.system.ranks + ")";
+                    }
+                    let encodedValue = [macroType, token.id, itemID].join(this.delimiter);
+                    return {name: name, id: itemID, encodedValue: encodedValue};
+                } catch (error) {
+                    Logger.error(e);
+                    return null;
+                }
+            }).filter(s => !!s) // filter out nulls
+                .sort((a,b) => a.name.localeCompare(b.name));
+            let favoritesCategory = this.initializeEmptySubcategory();
+            favoritesCategory.actions = favoriteActions;
+
+            let favoritesTitle = this.i18n("earthdawn.h.hotlist");
+            this._combineSubcategoryWithCategory(result, favoritesTitle, favoritesCategory);
+
+            return result;
         }
 
         /**

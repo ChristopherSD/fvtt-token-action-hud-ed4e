@@ -2,8 +2,10 @@
   "tokenActionHud": {
     "ed4e": {
       "general": "General",
+      "system": "System",
       "tooltips": {
-        "attributeTest": "Roll a {attribute} test."
+        "attributeTest": "Roll a {attribute} test.",
+        "recoveryTest": "Roll a recovery test."
       }
     }
   }
