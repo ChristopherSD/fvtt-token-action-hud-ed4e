@@ -1,8 +1,10 @@
 {
   "tokenActionHud": {
     "ed4e": {
+      "attack": "Attack",
       "favorites": "Favorites",
       "general": "General",
+      "options": "Options",
       "system": "System",
       "tooltips": {
         "attributeTest": "Roll a {attribute} test.",

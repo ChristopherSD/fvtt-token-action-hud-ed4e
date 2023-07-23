@@ -31,6 +31,51 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 groups: [
                     { ...groups.favorites, nestId: 'favorites_favorites'}
                 ]
+            },
+            {
+                nestId: 'talents',
+                id: 'talents',
+                name: 'TODO',
+                groups: []
+            },
+            {
+                nestId: 'skills',
+                id: 'skills',
+                name: 'TODO',
+                groups: []
+            },
+            {
+                nestId: 'spells',
+                id: 'spells',
+                name: 'TODO',
+                groups: []
+            },
+            {
+                nestId: 'inventory',
+                id: 'inventory',
+                name: 'TODO',
+                groups: [
+                    { ...groups.weapons, nestId: 'inventory_weapons'},
+                    { ...groups.armors, nestId: 'inventory_armors'},
+                    { ...groups.shields, nestId: 'inventory_shields'},
+                    { ...groups.equipment, nestId: 'inventory_equipment'}
+                ]
+            },
+            {
+                nestId: 'combat',
+                id: 'combat',
+                name: 'TODO',
+                groups: [
+                    { ...groups.weaponAttack, nestId: 'combat_weaponAttack'},
+                    { ...groups.optionsModifier, nestId: 'combate_optionsModifier'},
+                    { ...groups.actions, nestId: 'combat_actions'},
+                ]
+            },
+            {
+                nestId: 'effects',
+                id: 'effects',
+                name: 'TODO',
+                groups: []
             }
         ],
         groups: groupsArray
