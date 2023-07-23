@@ -1,5 +1,6 @@
 // System Module Imports
 import { Utils } from "./utils.js";
+import {ATTRIBUTES, ATTRIBUTES_ABBREVIATED, ATTRIBUTES_FULL_NAME} from "./constants.js";
 
 
 export let ActionHandler = null;
@@ -18,14 +19,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         items = null;
 
         // Initialize setting variables
-        showGeneral = null;
-        showFavorites = null;
-        showTalents = null;
-        showSkills = null;
-        showMatrices = null;
-        showInventory = null;
-        showStatusToggle = null;
-        showCombat = null;
+        abbreviateAttributes
 
         /**
          * Build System Actions
@@ -48,14 +42,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             // set settings variables
 
-            this.showGeneral = Utils.getSetting('showGeneral');
-            this.showFavorites = Utils.getSetting('showFavorites');
-            this.showTalents = Utils.getSetting('showTalents');
-            this.showSkills = Utils.getSetting('showSkills');
-            this.showMatrices = Utils.getSetting('showMatrices');
-            this.showInventory = Utils.getSetting('showInventory');
-            this.showStatusToggle = Utils.getSetting('showStatusToggle');
-            this.showCombat = Utils.getSetting('showCombat');
+            this.abbreviateAttributes = Utils.getSetting('abbreviateAttributes');
 
             if (this.actor) {
                 await this.#buildCharacterActions();
@@ -72,8 +59,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async #buildCharacterActions() {
             this.#buildGeneralCategory();
             this.#buildFavoritesCategory();
-            /*this._buildTalentsCategory();
-            this._buildMatrixCategory();
+            this.#buildTalentsCategory();
+            /*this._buildMatrixCategory();
             this._buildSkillsCategory();
             this._buildItemsCategory();
             this._buildAttacksCategory();
@@ -100,33 +87,29 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }*/
 
         #buildGeneralCategory() {
-            //if (!settings.get("showGeneral")) return;
-
             const isCreature = 'creature' === this.actor.type;
 
             //**********************
             // Create attribute check actions
             //**********************
 
-            const attributeProperties = [
-                "earthdawn.d.dexterity",
-                "earthdawn.s.strength",
-                "earthdawn.t.toughness",
-                "earthdawn.p.perception",
-                "earthdawn.w.willpower",
-                "earthdawn.c.charisma",
-            ]
-
             // create action for each attribute
-            let attributeActions = attributeProperties.map( e => {
+            let attributeActions = ATTRIBUTES.map( e => {
                     return {
                         id: null,
-                        name: this.i18n.localize(e), // localize in system
+                        name: this.i18n.localize(
+                            this.abbreviateAttributes
+                                ? ATTRIBUTES_ABBREVIATED[e]
+                                : ATTRIBUTES_FULL_NAME[e]
+                        ), // localize in system
                         encodedValue: ["attribute", this.token.id, e].join(this.delimiter),
                         tooltip: this.i18n.format(
                             "tokenActionHud.ed4e.tooltips.attributeTest",
                             {attribute: this.i18n.localize(e)}
-                        )
+                        ),
+                        info1: {
+                            text: `${this.actor.system[`${e}Step`]}`,
+                            title: this.i18n.localize('tokenActionHud.ed4e.infoTitles.attributeStep')}
                     }
                 }
             ).filter(s => !!s); // filter out nulls
@@ -149,7 +132,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     id: null,
                     name: this.i18n.localize("earthdawn.r.recovery"),
                     encodedValue: ["recovery", this.token.id, "recovery"].join(this.delimiter),
-                    tooltip: this.i18n.localize("tokenActionHud.ed4e.tooltips.recoveryTest")
+                    info1: {
+                        text: `${this.actor.system.recoverytestscurrent}/${this.actor.system.recoverytestsrefreshFinal}`
+                    }
+                    //tooltip: this.i18n.localize("tokenActionHud.ed4e.tooltips.recoveryTest")
                 }
             ];
             if (!isCreature) {
@@ -192,7 +178,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         id: null,
                         name: this.i18n.localize(e), // localize in system
                         encodedValue: ["toggle", this.token.id, mapPropToActionID[e]].join(this.delimiter),
-                        cssClass: this.actor.system["usekarma"] === "true" ? 'active' : 'toggle'
+                        cssClass: this.actor.system["usekarma"] === "true" ? 'toggle active' : 'toggle'
                     }
                 }
             ).filter(s => !!s) // filter out nulls
@@ -211,8 +197,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         }
 
         #buildFavoritesCategory() {
-            //if (!settings.get("showFavorites")) return;
-
             if ('creature' === this.actor.type) return;
 
             const favoriteItems = Array.from(
@@ -223,14 +207,19 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             let favoriteActions = favoriteItems.map(e => {
                 try {
-                    let itemID = e.id;
-                    let macroType = e.type.toLowerCase();
-                    let name = e.name;
-                    if (e.system.hasOwnProperty("ranks")) {
-                        name += " (" + e.system.ranks + ")";
-                    }
+                    const itemID = e.id;
+                    const macroType = e.type.toLowerCase();
+                    const name = e.name;
+                    let infoText = e.system.hasOwnProperty("ranks") ? `${e.system.ranks}` : null;
                     let encodedValue = [macroType, this.token.id, itemID].join(this.delimiter);
-                    return {name: name, id: itemID, encodedValue: encodedValue};
+                    return {
+                        id: itemID,
+                        name: name,
+                        encodedValue: encodedValue,
+                        info1: {
+                            text: infoText
+                        }
+                    };
                 } catch (error) {
                     error(e ?? 'No item in favorites');
                     return null;
@@ -247,6 +236,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             // add actions to action list
             this.addActions(favoriteActions, favoritesGroupData);
         }
+
+        #buildTalentsCategory() {}
 
         /**
          * Get actors
@@ -278,5 +269,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 return [];
             }
         }
+
     }
 })

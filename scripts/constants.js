@@ -18,19 +18,39 @@ export const CORE_MODULE = {
 export const REQUIRED_CORE_MODULE_VERSION = '1.4'
 
 /**
- * Action type
+ * Attributes list
  */
-export const ACTION_TYPE = {
-    ability: 'DND5E.Ability',
-    check: 'tokenActionHud.dnd5e.check',
-    condition: 'tokenActionHud.dnd5e.condition',
-    effect: 'DND5E.Effect',
-    feature: 'ITEM.TypeFeat',
-    item: 'tokenActionHud.dnd5e.item',
-    save: 'DND5E.ActionSave',
-    skill: 'tokenActionHud.dnd5e.skill',
-    spell: 'ITEM.TypeSpell',
-    utility: 'DND5E.ActionUtil'
+export const ATTRIBUTES = [
+    'dexterity',
+    'strength',
+    'toughness',
+    'perception',
+    'willpower',
+    'charisma'
+]
+
+/**
+ * Attributes to lang file property full name mapping
+ */
+export const ATTRIBUTES_FULL_NAME = {
+    'dexterity': "earthdawn.d.dexterity",
+    'strength': "earthdawn.s.strength",
+    'toughness': "earthdawn.t.toughness",
+    'perception': "earthdawn.p.perception",
+    'willpower': "earthdawn.w.willpower",
+    'charisma': "earthdawn.c.charisma",
+}
+
+/**
+ * Attributes to lang file property abbreviated mapping
+ */
+export const ATTRIBUTES_ABBREVIATED = {
+    'dexterity': "earthdawn.d.DEX",
+    'strength': "earthdawn.s.STR",
+    'toughness': "earthdawn.t.TOU",
+    'perception': "earthdawn.p.PER",
+    'willpower': "earthdawn.w.WIL",
+    'charisma': "earthdawn.c.CHA",
 }
 
 /**

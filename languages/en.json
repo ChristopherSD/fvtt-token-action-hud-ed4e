@@ -4,7 +4,16 @@
       "attack": "Attack",
       "favorites": "Favorites",
       "general": "General",
+      "infoTitles": {
+        "attributeStep": "Attribute Step"
+      },
       "options": "Options",
+      "settings": {
+        "abbreviateAttributes": {
+          "hint": "Display attribute names as a three-character abbreviation",
+          "name": "Abbreviate Attribute Names"
+        }
+      },
       "system": "System",
       "tooltips": {
         "attributeTest": "Roll a {attribute} test.",
