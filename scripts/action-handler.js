@@ -1,6 +1,6 @@
 // System Module Imports
 import { Utils } from "./utils.js";
-import {ATTRIBUTES, ATTRIBUTES_ABBREVIATED, ATTRIBUTES_FULL_NAME} from "./constants.js";
+import {ACTION_TYPE, ATTRIBUTES, ATTRIBUTES_ABBREVIATED, ATTRIBUTES_FULL_NAME} from "./constants.js";
 
 
 export let ActionHandler = null;
@@ -19,7 +19,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         items = null;
 
         // Initialize setting variables
-        abbreviateAttributes
+        abbreviateAttributes;
+        groupTalents;
+        groupSkills;
+
+        // Initialize groupIds variables
+        talentSkillGroupIds = null;
 
         /**
          * Build System Actions
@@ -43,9 +48,36 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             // set settings variables
 
             this.abbreviateAttributes = Utils.getSetting('abbreviateAttributes');
+            this.groupTalents = Utils.getSetting('groupTalentsByActionType');
+            this.groupSkills = Utils.getSetting('groupSkillsByActionType');
+
+            // set group IDs
+
+            /*this.talentSkillGroupIds = [
+                'standardSkills',
+                'standardTalents',
+                'simpleSkills',
+                'simpleTalents',
+                'freeSkills',
+                'freeTalents',
+                'sustainedSkills',
+                'sustainedTalents'
+            ]*/
+            this.talentSkillGroupIds = [
+                'standard',
+                'simple',
+                'free',
+                'sustained',
+                'na'
+            ]
 
             if (this.actor) {
-                await this.#buildCharacterActions();
+                if (['pc', 'npc'].includes(this.actor.type)) {
+                    await this.#buildCharacterActions();
+                }
+                if (this.actor.type === 'creature') {
+                    await this.#buildCreatureActions();
+                }
             } else {
                 //await this._buildMultipleTokenActions();
             }
@@ -57,9 +89,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          * @returns {object}
          */
         async #buildCharacterActions() {
+            await Promise.all([
+                this.#buildTalentsOrSkillCategory('talent'),
+                this.#buildTalentsOrSkillCategory('skill'),
+            ]);
             this.#buildGeneralCategory();
             this.#buildFavoritesCategory();
-            this.#buildTalentsCategory();
             /*this._buildMatrixCategory();
             this._buildSkillsCategory();
             this._buildItemsCategory();
@@ -67,6 +102,15 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             this._buildCreaturePowersCategory();
             this._buildCreatureManeuversCategory();
             this._buildCombatCategory();*/
+        }
+
+        /**
+         * Build Character Actions
+         * @private
+         * @returns {object}
+         */
+        async #buildCreatureActions() {
+            this.#buildGeneralCategory();
         }
 
         /**
@@ -237,7 +281,170 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             this.addActions(favoriteActions, favoritesGroupData);
         }
 
-        #buildTalentsCategory() {}
+        async #buildTalentsOrSkillCategory(type) {
+            // Get talent or skill items
+            const feats = new Map();
+            for (const [key, value] of this.items) {
+                const itemType = value.type;
+                if (itemType === type) feats.set(key, value);
+            }
+
+            // Early exit if no feats exist
+            if (feats.size === 0) return;
+
+            // Map talents/skill by action type to new maps
+            const actionTypeMap = new Map();
+
+            for (const [key, value] of feats) {
+                const actionType = value.system.action?.toLowerCase() ?? 'na';
+
+                if (!actionTypeMap.has(actionType)) actionTypeMap.set(actionType, new Map());
+                actionTypeMap.get(actionType).set(key, value);
+            }
+
+            // Create group name mappings
+            const groupNameMappings = {
+                'standard': this.i18n.localize('earthdawn.s.standard'),
+                'simple': this.i18n.localize('earthdawn.s.simple'),
+                'free': this.i18n.localize('earthdawn.s.free'),
+                'sustained': this.i18n.localize('earthdawn.s.sustained'),
+                'na': this.i18n.localize('tokenActionHud.ed4e.na')
+            }
+
+            // Loop through group IDs
+            for (const groupId of this.talentSkillGroupIds) {
+                if (!actionTypeMap.has(groupId)) continue;
+
+                // create group data
+                const groupData = {
+                    id: groupId,
+                    nestId: `${type}s_${groupId}`,
+                    name: groupNameMappings[groupId] ?? '',
+                    type: 'system'
+                }
+
+                const items = actionTypeMap.get(groupId);
+
+                await this.#buildActions(items, groupData, type);
+            }
+        }
+
+        /**
+         * Build actions
+         * @private
+         * @param {object} items
+         * @param {object} groupData
+         * @param {string} actionType
+         */
+        async #buildActions (items, groupData, actionType = 'item') {
+            // Exit if there are no items
+            if (items.size === 0) return;
+
+            // Exit if there is no groupId
+            const groupId = (typeof groupData === 'string' ? groupData : groupData?.id);
+            if (!groupId) return;
+
+            // Get actions
+            const actions = await Promise.all(
+                [...items].map(async item => await this.#getAction(actionType, item[1]))
+            );
+
+            // Add actions to action list
+            this.addActions(actions, groupData);
+        }
+
+        /**
+         * Get action
+         * @private
+         * @param {string} actionType
+         * @param {object} entity
+         * @returns {object}
+         */
+        async #getAction (actionType, entity) {
+            const id = entity.id ?? entity._id;
+            let name = entity?.name ?? entity?.label;
+            /*if (
+                entity?.system?.recharge &&
+                !entity?.system?.recharge?.charged &&
+                entity?.system?.recharge?.value
+            ) {
+                name += ` (${coreModule.api.Utils.i18n('DND5E.Recharge')})`
+            }*/
+            const actionTypeName = `${coreModule.api.Utils.i18n(ACTION_TYPE[actionType])}: ` ?? '';
+            const listName = `${actionTypeName}${name}`
+            let cssClass = ''
+            if (Object.hasOwn(entity, 'disabled')) {
+                const active = (!entity.disabled) ? ' active' : ''
+                cssClass = `toggle${active}`
+            }
+            const encodedValue = [actionType, this.token.id, id].join(this.delimiter)
+            const img = coreModule.api.Utils.getImage(entity)
+            //const icon1 = this.#getActivationTypeIcon(entity?.system?.activation?.type)
+            //let icon2 = null
+            let info = null
+            if (entity.type === 'spell') {
+                //icon2 = this.#getPreparedIcon(entity)
+                //if (this.displaySpellInfo) info = this.#getSpellInfo(entity)
+            } else {
+                info = this.#getItemInfo(entity)
+            }
+            const info1 = info?.info1
+            const info2 = info?.info2
+            const info3 = info?.info3
+            //const tooltipData = await this.#getTooltipData(entity)
+            //const tooltip = await this.#getTooltip(tooltipData)
+            return {
+                id,
+                name,
+                encodedValue,
+                cssClass,
+                img,
+                //icon1,
+                //icon2,
+                info1,
+                info2,
+                info3,
+                listName,
+                //tooltip
+            }
+        }
+
+        /**
+         * Get item info
+         * @private
+         * @param {object} item
+         * @returns {object}
+         */
+        #getItemInfo (item) {
+            let info1, info2, info3;
+            switch (item.type) {
+                case 'talent':
+                case 'skill':
+                    info1 = {
+                        text: `${item.system.finalranks ?? item.system.ranks}`,
+                        title: this.i18n.localize('earthdawn.r.rank')
+                    }
+                    info2 = {
+                        text: this.i18n.localize(
+                            ATTRIBUTES_ABBREVIATED[item.system.attribute.replace('Step', '')]
+                            ?? 'earthdawn.n.none'
+                        ),
+                        title: this.i18n.localize('earthdawn.a.attribute')
+                    }
+                    info3 = {
+                        text: item.system.strain?.toString() ?? '0',
+                        title: this.i18n.localize('earthdawn.s.strain')
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return {
+                info1,
+                info2,
+                info3
+            }
+        }
 
         /**
          * Get actors
@@ -270,5 +477,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
 
+        #getTooltipData(entity) {}
+
+        #getTooltip(tooltipData) {}
     }
 })

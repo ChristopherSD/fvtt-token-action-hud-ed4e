@@ -18,6 +18,17 @@ export const CORE_MODULE = {
 export const REQUIRED_CORE_MODULE_VERSION = '1.4'
 
 /**
+ * Type of TAH actions
+ */
+export const ACTION_TYPE = {
+    'talent': 'earthdawn.t.talent',
+    'skill': 'earthdawn.s.skill',
+    'spell': 'earthdawn.s.spell',
+    'matrix': 'earthdawn.m.matrix',
+    'item': 'tokenActionHud.ed4e.item'
+}
+
+/**
  * Attributes list
  */
 export const ATTRIBUTES = [
@@ -51,6 +62,7 @@ export const ATTRIBUTES_ABBREVIATED = {
     'perception': "earthdawn.p.PER",
     'willpower': "earthdawn.w.WIL",
     'charisma': "earthdawn.c.CHA",
+    'initiative': "earthdawn.i.INI"
 }
 
 /**
@@ -104,6 +116,21 @@ export const GROUP = {
     weaponAttack: { id: 'weaponAttack', name: 'tokenActionHud.ed4e.attack', type: 'system'},
     optionsModifier: { id: 'optionsModifier', name: 'tokenActionHud.ed4e.options', type: 'system'},
     actions: { id: 'actions', name: 'earthdawn.a.actions', type: 'system'},
+    standardSkills: { id: 'standardSkills', name: 'earthdawn.s.standard', type: 'system'},
+    simpleSkills: { id: 'simpleSkills', name: 'earthdawn.s.sustained', type: 'system'},
+    freeSkills: { id: 'freeSkills', name: 'earthdawn.f.free', type: 'system'},
+    sustainedSkills: { id: 'sustainedSkills', name: 'earthdawn.s.sustained', type: 'system'},
+    naSkills: { id: 'naSkills', name: 'tokenActionHud.ed4e.na', type: 'system'},
+    standardTalents: { id: 'standardTalents', name: 'earthdawn.s.standard', type: 'system'},
+    simpleTalents: { id: 'simpleTalents', name: 'earthdawn.s.sustained', type: 'system'},
+    freeTalents: { id: 'freeTalents', name: 'earthdawn.f.free', type: 'system'},
+    sustainedTalents: { id: 'sustainedTalents', name: 'earthdawn.s.sustained', type: 'system'},
+    naTalents: { id: 'naTalents', name: 'tokenActionHud.ed4e.na', type: 'system'},
+    standard: { id: 'standard', name: 'earthdawn.s.standard', type: 'system'},
+    simple: { id: 'simple', name: 'earthdawn.s.sustained', type: 'system'},
+    free: { id: 'free', name: 'earthdawn.f.free', type: 'system'},
+    sustained: { id: 'sustained', name: 'earthdawn.s.sustained', type: 'system'},
+    na: { id: 'na', name: 'tokenActionHud.ed4e.na', type: 'system'},
     /*_1stLevelSpells: { id: '1st-level-spells', name: 'tokenActionHud.dnd5e.1stLevelSpells', type: 'system' },
     _2ndLevelSpells: { id: '2nd-level-spells', name: 'tokenActionHud.dnd5e.2ndLevelSpells', type: 'system' },
     _3rdLevelSpells: { id: '3rd-level-spells', name: 'tokenActionHud.dnd5e.3rdLevelSpells', type: 'system' },

@@ -7,11 +7,21 @@
       "infoTitles": {
         "attributeStep": "Attribute Step"
       },
+      "item": "Item",
+      "na": "N/A",
       "options": "Options",
       "settings": {
         "abbreviateAttributes": {
           "hint": "Display attribute names as a three-character abbreviation",
           "name": "Abbreviate Attribute Names"
+        },
+        "groupTalentsByActionType": {
+          "hint": "Display talents in groups of their type of action (standard, simple, free, sustained)",
+          "name": "Group talents by action type"
+        },
+        "groupSkillsByActionType": {
+          "hint": "Display skills in groups of their type of action (standard, simple, free, sustained)",
+          "name": "Group skills by action type"
         }
       },
       "system": "System",

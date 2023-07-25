@@ -35,14 +35,34 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             {
                 nestId: 'talents',
                 id: 'talents',
-                name: 'TODO',
-                groups: []
+                name: coreModule.api.Utils.i18n('earthdawn.t.talents'),
+                groups: [
+                    /*{...groups.standardTalents, nestId: 'talents_standardTalents'},
+                    {...groups.simpleTalents, nestId: 'talents_simpleTalents'},
+                    {...groups.freeTalents, nestId: 'talents_freeTalents'},
+                    {...groups.sustainedTalents, nestId: 'talents_sustainedTalents'}*/
+                    {...groups.standard, nestId: 'talents_standard'},
+                    {...groups.simple, nestId: 'talents_simple'},
+                    {...groups.free, nestId: 'talents_free'},
+                    {...groups.sustained, nestId: 'talents_sustained'},
+                    {...groups.na, nestId: 'talents_na'},
+                ]
             },
             {
                 nestId: 'skills',
                 id: 'skills',
-                name: 'TODO',
-                groups: []
+                name: coreModule.api.Utils.i18n('earthdawn.s.skills'),
+                groups: [
+                    /*{...groups.standardSkills, nestId: 'skills_standardSkills'},
+                    {...groups.simpleSkills, nestId: 'skills_simpleSkills'},
+                    {...groups.freeSkills, nestId: 'skills_freeSkills'},
+                    {...groups.sustainedSkills, nestId: 'skills_sustainedSkills'}*/
+                    {...groups.standard, nestId: 'skills_standard'},
+                    {...groups.simple, nestId: 'skills_simple'},
+                    {...groups.free, nestId: 'skills_free'},
+                    {...groups.sustained, nestId: 'skills_sustained'},
+                    {...groups.na, nestId: 'skills_na'},
+                ]
             },
             {
                 nestId: 'spells',
@@ -53,7 +73,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             {
                 nestId: 'inventory',
                 id: 'inventory',
-                name: 'TODO',
+                name: coreModule.api.Utils.i18n('earthdawn.i.inventory'),
                 groups: [
                     { ...groups.weapons, nestId: 'inventory_weapons'},
                     { ...groups.armors, nestId: 'inventory_armors'},
@@ -64,7 +84,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             {
                 nestId: 'combat',
                 id: 'combat',
-                name: 'TODO',
+                name: coreModule.api.Utils.i18n('earthdawn.c.combat'),
                 groups: [
                     { ...groups.weaponAttack, nestId: 'combat_weaponAttack'},
                     { ...groups.optionsModifier, nestId: 'combate_optionsModifier'},
