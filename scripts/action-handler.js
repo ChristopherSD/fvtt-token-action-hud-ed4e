@@ -283,49 +283,63 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         async #buildTalentsOrSkillCategory(type) {
             // Get talent or skill items
-            const feats = new Map();
+            const talentsSkills = new Map();
             for (const [key, value] of this.items) {
                 const itemType = value.type;
-                if (itemType === type) feats.set(key, value);
+                if (itemType === type) talentsSkills.set(key, value);
             }
 
-            // Early exit if no feats exist
-            if (feats.size === 0) return;
+            // Early exit if no items exist
+            if (talentsSkills.size === 0) return;
 
-            // Map talents/skill by action type to new maps
-            const actionTypeMap = new Map();
+            coreModule.api.Logger.debug(`Building category, type: ${type}`);
+            console.debug(`Building category, type: ${type}`);
+            if (
+                (type === 'talent' && this.groupTalents) || (type === 'skill' && this.groupSkills)
+            ) {
+                // Map talents/skill by action type to new maps
+                const actionTypeMap = new Map();
 
-            for (const [key, value] of feats) {
-                const actionType = value.system.action?.toLowerCase() ?? 'na';
+                for (const [key, value] of talentsSkills) {
+                    const actionType = value.system.action?.toLowerCase() ?? 'na';
 
-                if (!actionTypeMap.has(actionType)) actionTypeMap.set(actionType, new Map());
-                actionTypeMap.get(actionType).set(key, value);
-            }
-
-            // Create group name mappings
-            const groupNameMappings = {
-                'standard': this.i18n.localize('earthdawn.s.standard'),
-                'simple': this.i18n.localize('earthdawn.s.simple'),
-                'free': this.i18n.localize('earthdawn.s.free'),
-                'sustained': this.i18n.localize('earthdawn.s.sustained'),
-                'na': this.i18n.localize('tokenActionHud.ed4e.na')
-            }
-
-            // Loop through group IDs
-            for (const groupId of this.talentSkillGroupIds) {
-                if (!actionTypeMap.has(groupId)) continue;
-
-                // create group data
-                const groupData = {
-                    id: groupId,
-                    nestId: `${type}s_${groupId}`,
-                    name: groupNameMappings[groupId] ?? '',
-                    type: 'system'
+                    if (!actionTypeMap.has(actionType)) actionTypeMap.set(actionType, new Map());
+                    actionTypeMap.get(actionType).set(key, value);
                 }
 
-                const items = actionTypeMap.get(groupId);
+                // Create group name mappings
+                const groupNameMappings = {
+                    'standard': this.i18n.localize('earthdawn.s.standard'),
+                    'simple': this.i18n.localize('earthdawn.s.simple'),
+                    'free': this.i18n.localize('earthdawn.s.free'),
+                    'sustained': this.i18n.localize('earthdawn.s.sustained'),
+                    'na': this.i18n.localize('tokenActionHud.ed4e.na')
+                }
 
-                await this.#buildActions(items, groupData, type);
+                // Loop through group IDs
+                for (const groupId of this.talentSkillGroupIds) {
+                    if (!actionTypeMap.has(groupId)) continue;
+
+                    // create group data
+                    const groupData = {
+                        id: groupId,
+                        nestId: `${type}s_${groupId}`,
+                        name: groupNameMappings[groupId] ?? '',
+                        type: 'system'
+                    }
+
+                    const items = actionTypeMap.get(groupId);
+
+                    await this.#buildActions(items, groupData, type);
+                }
+            } else {
+                const groupId = `${type}s`
+                const groupData = {
+                    id: groupId,
+                    nestId: [groupId, groupId].join('_'),
+                    type: 'system'
+                }
+                await this.#buildActions(talentsSkills, groupData, type);
             }
         }
 
