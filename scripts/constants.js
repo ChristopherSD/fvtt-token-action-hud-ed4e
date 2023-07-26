@@ -66,6 +66,40 @@ export const ATTRIBUTES_ABBREVIATED = {
 }
 
 /**
+ * Max circle of spells
+ */
+export const MAX_SPELL_CIRCLE = 15;
+
+/**
+ * The group data for grouping by circle
+ */
+//Created overly complex and complicated because I have to initialize it and make
+// it just from @MAX_SPELL_CIRCLE.
+export const circleGroupData = Object.values(
+    Object.assign(
+        {},
+        [...Array(MAX_SPELL_CIRCLE).keys()].map(
+            idx => {
+                const circle = idx + 1;
+                const groupId = `circle${circle}spells`;
+                return {
+                    id: groupId,
+                    name: `Circle ${circle}`,
+                    type: 'system'
+                };
+
+            }
+        )
+    )
+).reduce(
+    (acc, current) => {
+        acc[current.id] = current;
+        return acc;
+    },
+    {}
+)
+
+/**
  * Activation type icons
  */
 export const ACTIVATION_TYPE_ICON = {
@@ -104,6 +138,10 @@ export const PROFICIENCY_LEVEL_ICON = {
     2: 'fas fa-check-double'
 }
 
+/**
+ * The available groups for use in the HUD (editable by the user)
+ * @type {{favorites: {name: string, id: string, type: string}, standard: {name: string, id: string, type: string}, circle14spells: {spellMode: number, name: string}, other: {name: string, id: string, type: string}, circle8spells: {spellMode: number, name: string}, circle1spells: {spellMode: number, name: string}, simple: {name: string, id: string, type: string}, sustained: {name: string, id: string, type: string}, circle5spells: {spellMode: number, name: string}, circle12spells: {spellMode: number, name: string}, skills: {name: string, id: string, type: string}, optionsModifier: {name: string, id: string, type: string}, circle6spells: {spellMode: number, name: string}, circle15spells: {spellMode: number, name: string}, free: {name: string, id: string, type: string}, circle10spells: {spellMode: number, name: string}, circle3spells: {spellMode: number, name: string}, weaponAttack: {name: string, id: string, type: string}, circle9spells: {spellMode: number, name: string}, circle13spells: {spellMode: number, name: string}, circle2spells: {spellMode: number, name: string}, equipment: {name: string, id: string, type: string}, armors: {name: string, id: string, type: string}, shields: {name: string, id: string, type: string}, system: {name: string, id: string, type: string}, na: {name: string, id: string, type: string}, circle11spells: {spellMode: number, name: string}, circle4spells: {spellMode: number, name: string}, circle7spells: {spellMode: number, name: string}, attributes: {name: string, id: string, type: string}, weapons: {name: string, id: string, type: string}, actions: {name: string, id: string, type: string}, talents: {name: string, id: string, type: string}}}
+ */
 export const GROUP = {
     attributes: { id: 'attributes', name: 'earthdawn.a.attributes', type: 'system' },
     other: { id: 'other', name: 'earthdawn.o.other', type: 'system' },
@@ -123,6 +161,7 @@ export const GROUP = {
     free: { id: 'free', name: 'earthdawn.f.free', type: 'system'},
     sustained: { id: 'sustained', name: 'earthdawn.s.sustained', type: 'system'},
     na: { id: 'na', name: 'tokenActionHud.ed4e.na', type: 'system'},
+    ...circleGroupData,
     /*_1stLevelSpells: { id: '1st-level-spells', name: 'tokenActionHud.dnd5e.1stLevelSpells', type: 'system' },
     _2ndLevelSpells: { id: '2nd-level-spells', name: 'tokenActionHud.dnd5e.2ndLevelSpells', type: 'system' },
     _3rdLevelSpells: { id: '3rd-level-spells', name: 'tokenActionHud.dnd5e.3rdLevelSpells', type: 'system' },

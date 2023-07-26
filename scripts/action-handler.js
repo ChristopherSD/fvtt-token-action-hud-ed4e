@@ -1,6 +1,6 @@
 // System Module Imports
 import { Utils } from "./utils.js";
-import {ACTION_TYPE, ATTRIBUTES, ATTRIBUTES_ABBREVIATED, ATTRIBUTES_FULL_NAME} from "./constants.js";
+import {ACTION_TYPE, ATTRIBUTES, ATTRIBUTES_ABBREVIATED, ATTRIBUTES_FULL_NAME, MAX_SPELL_CIRCLE} from "./constants.js";
 
 
 export let ActionHandler = null;
@@ -25,6 +25,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         // Initialize groupIds variables
         talentSkillGroupIds = null;
+        spellCircleGroupIds = null;
 
         /**
          * Build System Actions
@@ -53,16 +54,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             // set group IDs
 
-            /*this.talentSkillGroupIds = [
-                'standardSkills',
-                'standardTalents',
-                'simpleSkills',
-                'simpleTalents',
-                'freeSkills',
-                'freeTalents',
-                'sustainedSkills',
-                'sustainedTalents'
-            ]*/
             this.talentSkillGroupIds = [
                 'standard',
                 'simple',
@@ -70,6 +61,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 'sustained',
                 'na'
             ]
+
+            this.spellCircleGroupIds = Array.from(
+                { length: MAX_SPELL_CIRCLE },
+                (_, idx) => `circle${idx + 1}spells`
+            );
 
             if (this.actor) {
                 if (['pc', 'npc'].includes(this.actor.type)) {
@@ -92,6 +88,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             await Promise.all([
                 this.#buildTalentsOrSkillCategory('talent'),
                 this.#buildTalentsOrSkillCategory('skill'),
+                this.#buildSpells()
             ]);
             this.#buildGeneralCategory();
             this.#buildFavoritesCategory();
@@ -343,6 +340,54 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
 
+        async #buildSpells() {
+            const actionType = 'spell';
+
+            const spellsMap = new Map();
+
+            // loop through items
+            for (const [key, value] of this.items) {
+                const itemType = value.type;
+                if (itemType === 'spell') {
+                    const circle = value.system.circle;
+                    const groupId = `circle${circle}spells`;
+                    if (!spellsMap.has(groupId)) spellsMap.set(groupId, new Map());
+                    spellsMap.get(groupId).set(key, value);
+                }
+            }
+
+            // create array of spell circles
+            const spellCircles = [...Array(MAX_SPELL_CIRCLE).keys()].map(circle => circle +1);
+
+            let groupMappings = {};
+
+            for (const spellCircle of spellCircles) {
+                groupMappings[`circle${spellCircle}spells`] = {
+                    spellCircle: spellCircle,
+                    name: `${this.i18n.localize('earthdawn.c.circle')} ${spellCircle}`
+                }
+            }
+
+            for (const groupId of this.spellCircleGroupIds) {
+                //const spellCircle = groupMappings[groupId].spellCircle;
+                const groupName = groupMappings[groupId].name;
+
+                // skip if no spells exist
+                if (!spellsMap.has(groupId)) continue;
+
+                // create group data
+                const groupData = {
+                    id: groupId,
+                    name: groupName,
+                    type: 'system'
+                };
+
+                const spells = spellsMap.get(groupId);
+
+                await this.#buildActions(spells, groupData, actionType)
+            }
+        }
+
         /**
          * Build actions
          * @private
@@ -395,10 +440,13 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const img = coreModule.api.Utils.getImage(entity)
             //const icon1 = this.#getActivationTypeIcon(entity?.system?.activation?.type)
             //let icon2 = null
-            let info = null
+            let info = null;
+            //let icon1 = null;
             if (entity.type === 'spell') {
-                //icon2 = this.#getPreparedIcon(entity)
+                //icon1 = <i className="fas fa-solid fa-dna" title="${this.i18n.localize('earthdawn.s.spellThreads')}"></i>;
+                //icon1 = this.#getPreparedIcon(entity)
                 //if (this.displaySpellInfo) info = this.#getSpellInfo(entity)
+                info = this.#getItemInfo(entity);
             } else {
                 info = this.#getItemInfo(entity)
             }
@@ -437,18 +485,29 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     info1 = {
                         text: `${item.system.finalranks ?? item.system.ranks}`,
                         title: this.i18n.localize('earthdawn.r.rank')
-                    }
+                    };
                     info2 = {
                         text: this.i18n.localize(
                             ATTRIBUTES_ABBREVIATED[item.system.attribute.replace('Step', '')]
                             ?? 'earthdawn.n.none'
                         ),
                         title: this.i18n.localize('earthdawn.a.attribute')
-                    }
+                    };
                     info3 = {
                         text: item.system.strain?.toString() ?? '0',
                         title: this.i18n.localize('earthdawn.s.strain')
-                    }
+                    };
+                    break;
+                case 'spell':
+                    info1 = {
+                        text: `${item.system.threadsrequired}`,
+                        title: this.i18n.localize('earthdawn.s.spellThreads')
+                    };
+                    info2 = {
+                        text: item.system.discipline ?? this.i18n.localize('tokenActionHud.ed4e.na'),
+                        title: this.i18n.localize('earthdawn.d.discipline')
+                    };
+                    info3 = null;
                     break;
                 default:
                     break;

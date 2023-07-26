@@ -1,4 +1,4 @@
-import {GROUP} from "./constants.js";
+import {circleGroupData, GROUP} from "./constants.js";
 
 /**
  * Default categories and groups
@@ -38,10 +38,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 name: coreModule.api.Utils.i18n('earthdawn.t.talents'),
                 type: 'system',
                 groups: [
-                    /*{...groups.standardTalents, nestId: 'talents_standardTalents'},
-                    {...groups.simpleTalents, nestId: 'talents_simpleTalents'},
-                    {...groups.freeTalents, nestId: 'talents_freeTalents'},
-                    {...groups.sustainedTalents, nestId: 'talents_sustainedTalents'}*/
                     {...groups.standard, nestId: 'talents_standard'},
                     {...groups.simple, nestId: 'talents_simple'},
                     {...groups.free, nestId: 'talents_free'},
@@ -55,10 +51,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 id: 'skills',
                 name: coreModule.api.Utils.i18n('earthdawn.s.skills'),
                 groups: [
-                    /*{...groups.standardSkills, nestId: 'skills_standardSkills'},
-                    {...groups.simpleSkills, nestId: 'skills_simpleSkills'},
-                    {...groups.freeSkills, nestId: 'skills_freeSkills'},
-                    {...groups.sustainedSkills, nestId: 'skills_sustainedSkills'}*/
                     {...groups.standard, nestId: 'skills_standard'},
                     {...groups.simple, nestId: 'skills_simple'},
                     {...groups.free, nestId: 'skills_free'},
@@ -70,8 +62,14 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             {
                 nestId: 'spells',
                 id: 'spells',
-                name: 'TODO',
-                groups: []
+                name: coreModule.api.Utils.i18n('earthdawn.s.spells'),
+                groups: Array.from(
+                    Object.values(circleGroupData),
+                    group => {
+                        group['nestId'] = `spells_${group.id}`;
+                        return group;
+                    }
+                )
             },
             {
                 nestId: 'inventory',

@@ -25,6 +25,7 @@
         }
       },
       "system": "System",
+      "threads": "Threads",
       "tooltips": {
         "attributeTest": "Roll a {attribute} test.",
         "recoveryTest": "Roll a recovery test."
