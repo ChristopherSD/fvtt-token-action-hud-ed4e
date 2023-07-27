@@ -20,8 +20,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         // Initialize setting variables
         abbreviateAttributes;
-        groupTalents;
-        groupSkills;
 
         // Initialize groupIds variables
         talentSkillGroupIds = null;
@@ -291,60 +289,48 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             coreModule.api.Logger.debug(`Building category, type: ${type}`);
             console.debug(`Building category, type: ${type}`);
-            if (
-                (type === 'talent' && this.groupTalents) || (type === 'skill' && this.groupSkills)
-            ) {
-                // Map talents/skill by action type to new maps
-                const actionTypeMap = new Map();
 
-                for (const [key, value] of talentsSkills) {
-                    const actionType = value.system.action?.toLowerCase() ?? 'na';
-
-                    if (!actionTypeMap.has(actionType)) actionTypeMap.set(actionType, new Map());
-                    actionTypeMap.get(actionType).set(key, value);
-                }
-
-                // Create group name mappings
-                const groupNameMappings = {
-                    'standard': this.i18n.localize('earthdawn.s.standard'),
-                    'simple': this.i18n.localize('earthdawn.s.simple'),
-                    'free': this.i18n.localize('earthdawn.s.free'),
-                    'sustained': this.i18n.localize('earthdawn.s.sustained'),
-                    'na': this.i18n.localize('tokenActionHud.ed4e.na')
-                }
-
-                // Loop through group IDs
-                for (const groupId of this.talentSkillGroupIds) {
-                    if (!actionTypeMap.has(groupId)) continue;
-
-                    // create group data
-                    const groupData = {
-                        id: groupId,
-                        nestId: `${type}s_${groupId}`,
-                        name: groupNameMappings[groupId] ?? '',
-                        type: 'system'
-                    }
-
-                    const items = actionTypeMap.get(groupId);
-
-                    await this.#buildActions(items, groupData, type);
-                }
-            } else {
-                const groupId = `${type}s`
+            // Map talents/skill by action type to new maps
+            const actionTypeMap = new Map();
+            for (const [key, value] of talentsSkills) {
+                const actionType = value.system.action?.toLowerCase() ?? 'na';
+                if (!actionTypeMap.has(actionType)) actionTypeMap.set(actionType, new Map());
+                actionTypeMap.get(actionType).set(key, value);
+            }
+            // Create group name mappings
+            const groupNameMappings = {
+                'standard': this.i18n.localize('earthdawn.s.standard'),
+                'simple': this.i18n.localize('earthdawn.s.simple'),
+                'free': this.i18n.localize('earthdawn.s.free'),
+                'sustained': this.i18n.localize('earthdawn.s.sustained'),
+                'na': this.i18n.localize('tokenActionHud.ed4e.na')
+            }
+            // Loop through group IDs
+            for (const groupId of this.talentSkillGroupIds) {
+                if (!actionTypeMap.has(groupId)) continue;
+                // create group data
                 const groupData = {
                     id: groupId,
-                    nestId: [groupId, groupId].join('_'),
+                    nestId: `${type}s_${groupId}`,
+                    name: groupNameMappings[groupId] ?? '',
                     type: 'system'
                 }
-                await this.#buildActions(talentsSkills, groupData, type);
+                const items = actionTypeMap.get(groupId);
+                await this.#buildActions(items, groupData, type);
             }
-        }
 
+            // build ungrouped talent group
+            const groupId = `${type}s`
+            const groupData = {
+                id: groupId,
+                nestId: [groupId, groupId].join('_'),
+                type: 'system'
+            }
+            await this.#buildActions(talentsSkills, groupData, type);
+        }
         async #buildSpells() {
             const actionType = 'spell';
-
             const spellsMap = new Map();
-
             // loop through items
             for (const [key, value] of this.items) {
                 const itemType = value.type;

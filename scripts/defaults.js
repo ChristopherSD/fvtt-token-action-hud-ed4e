@@ -43,7 +43,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     {...groups.free, nestId: 'talents_free'},
                     {...groups.sustained, nestId: 'talents_sustained'},
                     {...groups.na, nestId: 'talents_na'},
-                    {...groups.talents, nestId: 'talents_talents'}
+                    //{...groups.talents, nestId: 'talents_talents'}
                 ]
             },
             {
@@ -56,7 +56,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     {...groups.free, nestId: 'skills_free'},
                     {...groups.sustained, nestId: 'skills_sustained'},
                     {...groups.na, nestId: 'skills_na'},
-                    {...groups.skills, nestId: 'skills_skills'}
+                    //{...groups.skills, nestId: 'skills_skills'}
                 ]
             },
             {
