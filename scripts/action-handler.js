@@ -24,6 +24,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         // Initialize groupIds variables
         talentSkillGroupIds = null;
         spellCircleGroupIds = null;
+        inventoryGroupIds = null;
 
         /**
          * Build System Actions
@@ -47,8 +48,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             // set settings variables
 
             this.abbreviateAttributes = Utils.getSetting('abbreviateAttributes');
-            this.groupTalents = Utils.getSetting('groupTalentsByActionType');
-            this.groupSkills = Utils.getSetting('groupSkillsByActionType');
 
             // set group IDs
 
@@ -66,7 +65,16 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             );
 
             if (this.actor) {
-                if (['pc', 'npc'].includes(this.actor.type)) {
+                if (this.actor.type === 'pc' || this.actor.type === 'npc') {
+                    this.inventoryGroupIds = [
+                        'equipped',
+                        'unequipped',
+                        'threadItems',
+                        'armors',
+                        'equipment',
+                        'shields',
+                        'weapons'
+                    ]
                     await this.#buildCharacterActions();
                 }
                 if (this.actor.type === 'creature') {
@@ -84,12 +92,13 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          */
         async #buildCharacterActions() {
             await Promise.all([
-                this.#buildTalentsOrSkillCategory('talent'),
-                this.#buildTalentsOrSkillCategory('skill'),
-                this.#buildSpells()
+                this.#buildTalentsOrSkill('talent'),
+                this.#buildTalentsOrSkill('skill'),
+                this.#buildSpells(),
+                this.#buildInventory()
             ]);
-            this.#buildGeneralCategory();
-            this.#buildFavoritesCategory();
+            this.#buildGeneral();
+            this.#buildFavorites();
             /*this._buildMatrixCategory();
             this._buildSkillsCategory();
             this._buildItemsCategory();
@@ -105,7 +114,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          * @returns {object}
          */
         async #buildCreatureActions() {
-            this.#buildGeneralCategory();
+            this.#buildGeneral();
         }
 
         /**
@@ -113,19 +122,19 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          * @private
          * @returns {object}
          async _buildMultipleTokenActions () {
-            this._buildGeneralCategory();
-            this._buildFavoritesCategory();
-            this._buildTalentsCategory();
-            this._buildMatrixCategory();
-            this._buildSkillsCategory();
-            this._buildItemsCategory();
-            this._buildAttacksCategory();
-            this._buildCreaturePowersCategory();
-            this._buildCreatureManeuversCategory();
-            this._buildCombatCategory();
-        }*/
+         this._buildGeneralCategory();
+         this._buildFavoritesCategory();
+         this._buildTalentsCategory();
+         this._buildMatrixCategory();
+         this._buildSkillsCategory();
+         this._buildItemsCategory();
+         this._buildAttacksCategory();
+         this._buildCreaturePowersCategory();
+         this._buildCreatureManeuversCategory();
+         this._buildCombatCategory();
+         }*/
 
-        #buildGeneralCategory() {
+        #buildGeneral() {
             const isCreature = 'creature' === this.actor.type;
 
             //**********************
@@ -152,6 +161,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     }
                 }
             ).filter(s => !!s); // filter out nulls
+
+            console.debug('Attribute Actions: ', attributeActions);
 
             // create group data
             const attributesGroupData = {
@@ -235,7 +246,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
 
-        #buildFavoritesCategory() {
+        #buildFavorites() {
             if ('creature' === this.actor.type) return;
 
             const favoriteItems = Array.from(
@@ -276,7 +287,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             this.addActions(favoriteActions, favoritesGroupData);
         }
 
-        async #buildTalentsOrSkillCategory(type) {
+        async #buildTalentsOrSkill(type) {
             // Get talent or skill items
             const talentsSkills = new Map();
             for (const [key, value] of this.items) {
@@ -328,6 +339,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
             await this.#buildActions(talentsSkills, groupData, type);
         }
+
         async #buildSpells() {
             const actionType = 'spell';
             const spellsMap = new Map();
@@ -374,6 +386,69 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
 
+        async #buildInventory() {
+            // exit early if no items exist
+            if (this.items.size === 0) return;
+
+            const inventoryMap = new Map();
+
+            for (const [itemId, itemEntity] of this.items) {
+                const isEquipabble = itemEntity.system.hasOwnProperty('worn');
+                const isThreadItem = itemEntity.system.isthread;
+                const equipped = !!itemEntity.system.worn;
+                const hasQuantity = itemEntity.system?.amount > 0;
+                const itemType = itemEntity.type;
+
+                // populate Map
+                if (equipped) {
+                    this.#addToMapOfMaps(inventoryMap, 'equipped', itemId, itemEntity);
+                } else if (isEquipabble) {
+                    this.#addToMapOfMaps(inventoryMap, 'unequipped', itemId, itemEntity);
+                }
+                if (isThreadItem) {
+                    this.#addToMapOfMaps(inventoryMap, 'threadItems', itemId, itemEntity);
+                }
+                if (itemType === 'armor') {
+                    this.#addToMapOfMaps(inventoryMap, 'armors', itemId, itemEntity);
+                }
+                if (itemType === 'equipment') {
+                    this.#addToMapOfMaps(inventoryMap, 'equipment', itemId, itemEntity);
+                }
+                if (itemType === 'shield') {
+                    this.#addToMapOfMaps(inventoryMap, 'shields', itemId, itemEntity);
+                }
+                if (itemType === 'weapon') {
+                    this.#addToMapOfMaps(inventoryMap, 'weapons', itemId, itemEntity);
+                }
+            }
+
+            const groupNameMappings = {
+                equipped: this.i18n.localize('earthdawn.e.equipped'),
+                unequipped: this.i18n.localize('tokenActionHud.ed4e.unequipped'),
+                threadItems: this.i18n.localize('earthdawn.t.threadItems'),
+                armors: this.i18n.localize('earthdawn.a.armors'),
+                equipment: this.i18n.localize('earthdawn.e.equipment'),
+                shields: this.i18n.localize('earthdawn.s.shields'),
+                weapons: this.i18n.localize('earthdawn.w.weapons')
+            }
+
+            for (const groupId of this.inventoryGroupIds) {
+                if (!inventoryMap.has(groupId)) continue;
+
+                const groupData = {
+                    id: groupId,
+                    name: groupNameMappings[groupId],
+                    type: 'system'
+                }
+
+                const inventory = inventoryMap.get(groupId);
+
+                //console.debug("Building Inventory Actions. Inventory Map:", inventoryMap);
+                await this.#buildActions(inventory, groupData);
+            }
+        }
+
+
         /**
          * Build actions
          * @private
@@ -416,29 +491,21 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 name += ` (${coreModule.api.Utils.i18n('DND5E.Recharge')})`
             }*/
             const actionTypeName = `${coreModule.api.Utils.i18n(ACTION_TYPE[actionType])}: ` ?? '';
-            const listName = `${actionTypeName}${name}`
-            let cssClass = ''
+            const listName = `${actionTypeName}${name}`;
+            let cssClass = '';
             if (Object.hasOwn(entity, 'disabled')) {
-                const active = (!entity.disabled) ? ' active' : ''
-                cssClass = `toggle${active}`
+                const active = (!entity.disabled) ? ' active' : '';
+                cssClass = `toggle${active}`;
             }
-            const encodedValue = [actionType, this.token.id, id].join(this.delimiter)
-            const img = coreModule.api.Utils.getImage(entity)
-            //const icon1 = this.#getActivationTypeIcon(entity?.system?.activation?.type)
-            //let icon2 = null
-            let info = null;
-            //let icon1 = null;
-            if (entity.type === 'spell') {
-                //icon1 = <i className="fas fa-solid fa-dna" title="${this.i18n.localize('earthdawn.s.spellThreads')}"></i>;
-                //icon1 = this.#getPreparedIcon(entity)
-                //if (this.displaySpellInfo) info = this.#getSpellInfo(entity)
-                info = this.#getItemInfo(entity);
-            } else {
-                info = this.#getItemInfo(entity)
-            }
-            const info1 = info?.info1
-            const info2 = info?.info2
-            const info3 = info?.info3
+            const encodedValue = [actionType, this.token.id, id].join(this.delimiter);
+            const img = coreModule.api.Utils.getImage(entity);
+            const icon = this.#getItemIcons(entity);
+            const icon1 = icon.icon1;
+            const icon2 = icon.icon2;
+            const info = this.#getItemInfo(entity);
+            const info1 = info?.info1;
+            const info2 = info?.info2;
+            const info3 = info?.info3;
             //const tooltipData = await this.#getTooltipData(entity)
             //const tooltip = await this.#getTooltip(tooltipData)
             return {
@@ -447,8 +514,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 encodedValue,
                 cssClass,
                 img,
-                //icon1,
-                //icon2,
+                icon1,
+                icon2,
                 info1,
                 info2,
                 info3,
@@ -495,6 +562,16 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     };
                     info3 = null;
                     break;
+                case 'armor':
+                    info1 = {
+                        text: `${item.system.physicalArmorFinal} ${this.i18n.localize('tokenActionHud.ed4e.abbreviations.physicalArmor')}`,
+                        title: this.i18n.localize('earthdawn.p.physicalArmor')
+                    }
+                    info2 = {
+                        text: `${item.system.mysticArmorFinal} ${this.i18n.localize('tokenActionHud.ed4e.abbreviations.mysticArmor')}`,
+                        title: this.i18n.localize('earthdawn.m.mysticArmor')
+                    }
+                    break;
                 default:
                     break;
             }
@@ -503,6 +580,30 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 info2,
                 info3
             }
+        }
+
+        /**
+         * Get icons name for item based on type, shown to left of action/group
+         */
+        #getItemIcons(item) {
+            let icon1, icon2;
+
+            switch (item.type) {
+                case 'armor':
+                case 'weapon':
+                    if (
+                        item.system.timesForged > 0
+                        || item.system.timesForgedMystic > 0
+                        || item.system.timesForgedPhysical > 0
+                    ) {
+                        icon1 = `<i class="fas fa-hammer" title="${this.i18n.localize('tokenActionHud.ed4e.forged')}"></i>`
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            return {icon1, icon2};
         }
 
         /**
@@ -534,6 +635,13 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             } else {
                 return [];
             }
+        }
+
+        #addToMapOfMaps(map, mainKey, subKey, subValue) {
+            if (!map.has(mainKey)) {
+                map.set(mainKey, new Map());
+            }
+            map.get(mainKey).set(subKey, subValue);
         }
 
         #getTooltipData(entity) {}

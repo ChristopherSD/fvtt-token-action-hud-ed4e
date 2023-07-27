@@ -1,8 +1,13 @@
 {
   "tokenActionHud": {
     "ed4e": {
+      "abbreviations": {
+        "physicalArmor": "PA",
+        "mysticArmor": "MA"
+      },
       "attack": "Attack",
       "favorites": "Favorites",
+      "forged": "Forged",
       "general": "General",
       "infoTitles": {
         "attributeStep": "Attribute Step"
@@ -29,7 +34,8 @@
       "tooltips": {
         "attributeTest": "Roll a {attribute} test.",
         "recoveryTest": "Roll a recovery test."
-      }
+      },
+      "unequipped": "Unequipped"
     }
   }
 }
