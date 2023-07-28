@@ -171,8 +171,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 }
             ).filter(s => !!s); // filter out nulls
 
-            console.debug('Attribute Actions: ', attributeActions);
-
             // create group data
             const attributesGroupData = {
                 id: 'attributes',
@@ -511,6 +509,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const icon = this.#getItemIcons(entity);
             const icon1 = icon.icon1;
             const icon2 = icon.icon2;
+            const icon3 = icon.icon3;
             const info = this.#getItemInfo(entity);
             const info1 = info?.info1;
             const info2 = info?.info2;
@@ -525,6 +524,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 img,
                 icon1,
                 icon2,
+                icon3,
                 info1,
                 info2,
                 info3,
@@ -573,15 +573,37 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     };
                     info3 = null;
                     break;
+                case 'equipment':
+                    if (item.system.amount > 1) {
+                        info1 = {
+                            text: `${item.system.amount}x`,
+                            title: this.i18n.localize('earthdawn.a.amount')
+                        };
+                    }
+                    break;
                 case 'armor':
                     info1 = {
                         text: `${item.system.physicalArmorFinal} ${this.i18n.localize('tokenActionHud.ed4e.abbreviations.physicalArmor')}`,
                         title: this.i18n.localize('earthdawn.p.physicalArmor')
-                    }
+                    };
                     info2 = {
                         text: `${item.system.mysticArmorFinal} ${this.i18n.localize('tokenActionHud.ed4e.abbreviations.mysticArmor')}`,
                         title: this.i18n.localize('earthdawn.m.mysticArmor')
-                    }
+                    };
+                    break;
+                case 'shield':
+                    info1 = {
+                        text: `${item.system.physicaldefense} ${this.i18n.localize('tokenActionHud.ed4e.abbreviations.physicalDefense')}`,
+                        title: this.i18n.localize('earthdawn.p.physicalDefense')
+                    };
+                    info2 = {
+                        text: `${item.system.mysticdefense} ${this.i18n.localize('tokenActionHud.ed4e.abbreviations.mysticDefense')}`,
+                        title: this.i18n.localize('earthdawn.m.mysticDefense')
+                    };
+                    info3 = {
+                        text: `${item.system.shatterthreshold}`,
+                        title: this.i18n.localize('earthdawn.s.shatterThreshold')
+                    };
                     break;
                 case 'weapon':
                     info1 = {
@@ -613,7 +635,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          * Get icons name for item based on type, shown to left of action/group
          */
         #getItemIcons(item) {
-            let icon1, icon2;
+            let icon1, icon2, icon3;
 
             switch (item.type) {
                 case 'talent':
@@ -630,14 +652,18 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         || item.system.timesForgedMystic > 0
                         || item.system.timesForgedPhysical > 0
                     ) {
-                        icon2 = `<i class="fa-duotone fa-hammer-crash" title="${this.i18n.localize('tokenActionHud.ed4e.forged')}"></i>`;
+                        icon2 = `<i class="fa-thin fa-hammer-crash" title="${this.i18n.localize('tokenActionHud.ed4e.forged')}"></i>`;
                     }
                     break;
                 default:
                     break;
             }
 
-            return {icon1, icon2};
+            if (item.system.isthread) {
+                icon3 = `<i class="fa-thin fa-wand-sparkles" title="${this.i18n.localize('earthdawn.t.threadItem')}"></i>`;
+            }
+
+            return {icon1, icon2, icon3};
         }
 
         /**

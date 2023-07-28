@@ -3,7 +3,9 @@
     "ed4e": {
       "abbreviations": {
         "physicalArmor": "PA",
-        "mysticArmor": "MA"
+        "physicalDefense": "PD",
+        "mysticArmor": "MA",
+        "mysticDefense": "MD"
       },
       "attack": "Attack",
       "favorites": "Favorites",
