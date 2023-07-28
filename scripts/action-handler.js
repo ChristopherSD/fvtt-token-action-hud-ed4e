@@ -27,6 +27,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         // Initialize setting variables
         abbreviateAttributes;
+        showWeaponAmmoInfo;
 
         // Initialize groupIds variables
         talentSkillGroupIds = null;
@@ -55,6 +56,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             // set settings variables
 
             this.abbreviateAttributes = Utils.getSetting('abbreviateAttributes');
+            this.showWeaponAmmoInfo = Utils.getSetting('showWeaponAmmoInfo')
 
             // set group IDs
 
@@ -582,7 +584,20 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     }
                     break;
                 case 'weapon':
-                    info1 = {};
+                    info1 = {
+                        text: `${item.system.damageTotal}`,
+                        title: this.i18n.localize('tokenActionHud.ed4e.tooltips.info.weaponStepTotal')
+                    };
+                    if (['ranged', 'thrown'].includes(item.system.weapontype)) {
+                        info2 = {
+                            text: `${item.system.shortrange}/${item.system.longrange}`,
+                            title: this.i18n.localize('tokenActionHud.ed4e.tooltips.info.weaponRange')
+                        };
+                        info3 = {
+                            text: `${item.system.ammo}`,
+                            title: this.i18n.localize('tokenActionHud.ed4e.tooltips.info.weaponAmmo')
+                        };
+                    }
                     break;
                 default:
                     break;

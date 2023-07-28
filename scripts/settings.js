@@ -10,4 +10,14 @@ export function register(updateFunc) {
         default: false,
         onChange: value => {updateFunc(value);}
     });
+
+    game.settings.register(MODULE.ID, 'showWeaponAmmoInfo', {
+        name: game.i18n.localize("tokenActionHud.ed4e.settings.showWeaponAmmoInfo.name"),
+        hint: game.i18n.localize("tokenActionHud.ed4e.settings.showWeaponAmmoInfo.hint"),
+        scope: "client",
+        config: true,
+        type: Boolean,
+        default: true,
+        onChange: value => {updateFunc(value);}
+    });
 }

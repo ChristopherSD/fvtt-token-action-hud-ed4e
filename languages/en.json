@@ -20,19 +20,20 @@
           "hint": "Display attribute names as a three-character abbreviation",
           "name": "Abbreviate Attribute Names"
         },
-        "groupTalentsByActionType": {
-          "hint": "Display talents in groups of their type of action (standard, simple, free, sustained)",
-          "name": "Group talents by action type"
-        },
-        "groupSkillsByActionType": {
-          "hint": "Display skills in groups of their type of action (standard, simple, free, sustained)",
-          "name": "Group skills by action type"
+        "showWeaponAmmoInfo": {
+          "hint": "Display value of tracked ammo for ranged weapons",
+          "name": "Show ammo for weapons"
         }
       },
       "system": "System",
       "threads": "Threads",
       "tooltips": {
         "attributeTest": "Roll a {attribute} test.",
+        "info": {
+          "weaponAmmo": "Current Ammo",
+          "weaponRange": "Range (short/long)",
+          "weaponStepTotal": "Damage step total<br>(Weapon + Forged + Attribute)"
+        },
         "recoveryTest": "Roll a recovery test."
       },
       "unequipped": "Unequipped"
