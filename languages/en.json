@@ -8,6 +8,9 @@
         "mysticDefense": "MD"
       },
       "attack": "Attack",
+      "disciplines": {
+
+      },
       "favorites": "Favorites",
       "forged": "Forged",
       "general": "General",

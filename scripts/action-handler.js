@@ -5,7 +5,7 @@ import {
     ATTRIBUTES,
     ATTRIBUTES_ABBREVIATED,
     ATTRIBUTES_FULL_NAME,
-    MAX_SPELL_CIRCLE,
+    MAX_SPELL_CIRCLE, SPELLCASTING_DISCIPLINES,
     WEAPON_TYPE_ICON
 } from "./constants.js";
 
@@ -31,7 +31,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         // Initialize groupIds variables
         talentSkillGroupIds = null;
-        spellCircleGroupIds = null;
+        spellGroupIds = null;
         inventoryGroupIds = null;
 
         /**
@@ -68,10 +68,17 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 'na'
             ]
 
-            this.spellCircleGroupIds = Array.from(
+            this.spellGroupIds = Array.from(
                 { length: MAX_SPELL_CIRCLE },
                 (_, idx) => `circle${idx + 1}spells`
             );
+
+            this.spellGroupIds.push(
+                ...Array.from(
+                    SPELLCASTING_DISCIPLINES,
+                    (discipline, _) => `${discipline}Spells`
+                )
+            )
 
             if (this.actor) {
                 if (this.actor.type === 'pc' || this.actor.type === 'npc') {
@@ -355,9 +362,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 const itemType = value.type;
                 if (itemType === 'spell') {
                     const circle = value.system.circle;
-                    const groupId = `circle${circle}spells`;
-                    if (!spellsMap.has(groupId)) spellsMap.set(groupId, new Map());
-                    spellsMap.get(groupId).set(key, value);
+                    const circleGroupId = `circle${circle}spells`;
+                    const discipline = value.system.discipline.toLowerCase();
+                    const disciplineGroupId = `${discipline}Spells`;
+                    this.#addToMapOfMaps(spellsMap, circleGroupId, key, value);
+                    this.#addToMapOfMaps(spellsMap, disciplineGroupId, key, value);
                 }
             }
 
@@ -373,8 +382,15 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 }
             }
 
-            for (const groupId of this.spellCircleGroupIds) {
-                //const spellCircle = groupMappings[groupId].spellCircle;
+            for (const discipline of SPELLCASTING_DISCIPLINES) {
+                groupMappings[`${discipline}Spells`] = {
+                    discipline: discipline,
+                    name: discipline.charAt(0).toUpperCase() + discipline.slice(1)
+                        //`${this.i18n.localize(`tokenActionHud.ed4e.disciplines.${discipline}`)}`
+                }
+            }
+
+            for (const groupId of this.spellGroupIds) {
                 const groupName = groupMappings[groupId].name;
 
                 // skip if no spells exist
@@ -473,7 +489,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             // Get actions
             const actions = await Promise.all(
-                [...items].map(async item => await this.#getAction(actionType, item[1]))
+                [...items].map(async item => await this.#getAction(actionType, item[1], groupData))
             );
 
             // Add actions to action list
@@ -487,7 +503,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          * @param {object} entity
          * @returns {object}
          */
-        async #getAction (actionType, entity) {
+        async #getAction(actionType, entity, groupData) {
             const id = entity.id ?? entity._id;
             let name = entity?.name ?? entity?.label;
             /*if (
@@ -510,7 +526,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const icon1 = icon.icon1;
             const icon2 = icon.icon2;
             const icon3 = icon.icon3;
-            const info = this.#getItemInfo(entity);
+            const info = this.#getItemInfo(entity, groupData);
             const info1 = info?.info1;
             const info2 = info?.info2;
             const info3 = info?.info3;
@@ -539,7 +555,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          * @param {object} item
          * @returns {object}
          */
-        #getItemInfo (item) {
+        #getItemInfo(item, groupData) {
             let info1, info2, info3;
             switch (item.type) {
                 case 'talent':
@@ -567,10 +583,17 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         text: `${item.system.threadsrequired}`,
                         title: this.i18n.localize('earthdawn.s.spellThreads')
                     };
-                    info2 = {
-                        text: item.system.discipline ?? this.i18n.localize('tokenActionHud.ed4e.na'),
-                        title: this.i18n.localize('earthdawn.d.discipline')
-                    };
+                    if (groupData.id.includes('circle')) {
+                        info2 = {
+                            text: item.system.discipline ?? this.i18n.localize('tokenActionHud.ed4e.na'),
+                            title: this.i18n.localize('earthdawn.d.discipline')
+                        };
+                    } else {
+                        info2 = {
+                            text: `${item.system.circle}`,
+                            title: this.i18n.localize('earthdawn.c.circle')
+                        };
+                    }
                     info3 = null;
                     break;
                 case 'equipment':

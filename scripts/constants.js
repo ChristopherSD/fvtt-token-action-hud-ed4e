@@ -29,6 +29,17 @@ export const ACTION_TYPE = {
 }
 
 /**
+ * Spellcasting disciplines list
+ */
+export const SPELLCASTING_DISCIPLINES = [
+    'elementalist',
+    'illusionist',
+    'nethermancer',
+    'shaman',
+    'wizard'
+]
+
+/**
  * Attributes list
  */
 export const ATTRIBUTES = [
@@ -100,6 +111,23 @@ export const circleGroupData = Object.values(
 )
 
 /**
+ * The group data for grouping by discipline
+ * @type {{}}
+ */
+export const disciplineGroupData = SPELLCASTING_DISCIPLINES.reduce(
+    (o, discipline) => {
+        const groupId = `${discipline}Spells`;
+        return {...o, [groupId]:
+                {id: groupId,
+                    name: discipline.charAt(0).toUpperCase() + discipline.slice(1),
+                    type: 'system'
+                }
+        };
+    },
+    {}
+)
+
+/**
  * Weapon type icons
  */
 export const WEAPON_TYPE_ICON = {
@@ -107,21 +135,6 @@ export const WEAPON_TYPE_ICON = {
     ranged: 'fa-thin fa-bow-arrow',
     thrown: 'fa-thin fa-bullseye-arrow',
     unarmed: 'fa-thin fa-hand-fist'
-}
-
-/**
- * Activation type icons
- */
-export const ACTIVATION_TYPE_ICON = {
-    bonus: 'fas fa-plus',
-    crew: 'fas fa-users',
-    day: 'fas fa-hourglass-end',
-    hour: 'fas fa-hourglass-half',
-    lair: 'fas fa-home',
-    minute: 'fas fa-hourglass-start',
-    legendary: 'fas fas fa-dragon',
-    reaction: 'fas fa-bolt',
-    special: 'fas fa-star'
 }
 
 /**
@@ -175,6 +188,8 @@ export const GROUP = {
     sustained: { id: 'sustained', name: 'earthdawn.s.sustained', type: 'system'},
     na: { id: 'na', name: 'tokenActionHud.ed4e.na', type: 'system'},
     ...circleGroupData,
+    ...disciplineGroupData,
+    //...disciplineGroupData,
     /*_1stLevelSpells: { id: '1st-level-spells', name: 'tokenActionHud.dnd5e.1stLevelSpells', type: 'system' },
     _2ndLevelSpells: { id: '2nd-level-spells', name: 'tokenActionHud.dnd5e.2ndLevelSpells', type: 'system' },
     _3rdLevelSpells: { id: '3rd-level-spells', name: 'tokenActionHud.dnd5e.3rdLevelSpells', type: 'system' },
