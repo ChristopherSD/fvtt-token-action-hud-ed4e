@@ -1,6 +1,13 @@
 // System Module Imports
 import { Utils } from "./utils.js";
-import {ACTION_TYPE, ATTRIBUTES, ATTRIBUTES_ABBREVIATED, ATTRIBUTES_FULL_NAME, MAX_SPELL_CIRCLE} from "./constants.js";
+import {
+    ACTION_TYPE,
+    ATTRIBUTES,
+    ATTRIBUTES_ABBREVIATED,
+    ATTRIBUTES_FULL_NAME,
+    MAX_SPELL_CIRCLE,
+    WEAPON_TYPE_ICON
+} from "./constants.js";
 
 
 export let ActionHandler = null;
@@ -546,10 +553,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         ),
                         title: this.i18n.localize('earthdawn.a.attribute')
                     };
-                    info3 = {
-                        text: item.system.strain?.toString() ?? '0',
-                        title: this.i18n.localize('earthdawn.s.strain')
-                    };
+                    if (item.system.strain > 0) {
+                        info3 = {
+                            text: item.system.strain.toString(),
+                            title: this.i18n.localize('earthdawn.s.strain')
+                        };
+                    }
                     break;
                 case 'spell':
                     info1 = {
@@ -572,6 +581,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         title: this.i18n.localize('earthdawn.m.mysticArmor')
                     }
                     break;
+                case 'weapon':
+                    info1 = {};
+                    break;
                 default:
                     break;
             }
@@ -589,14 +601,21 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             let icon1, icon2;
 
             switch (item.type) {
-                case 'armor':
+                case 'talent':
+                case 'skill':
+                    if (item.system.strain > 0) {
+                        icon1 = `<i class="fa-thin fa-droplet" title="${this.i18n.localize('earthdawn.s.strain')}"></i>`;
+                    }
+                    break;
                 case 'weapon':
+                    icon1 = `<i class="${WEAPON_TYPE_ICON[item.system.weapontype.toLowerCase()]}" title="${this.i18n.localize('earthdawn.w.weaponType')}"></i>`;
+                case 'armor':
                     if (
                         item.system.timesForged > 0
                         || item.system.timesForgedMystic > 0
                         || item.system.timesForgedPhysical > 0
                     ) {
-                        icon1 = `<i class="fas fa-hammer" title="${this.i18n.localize('tokenActionHud.ed4e.forged')}"></i>`
+                        icon2 = `<i class="fa-duotone fa-hammer-crash" title="${this.i18n.localize('tokenActionHud.ed4e.forged')}"></i>`;
                     }
                     break;
                 default:

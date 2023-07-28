@@ -100,6 +100,16 @@ export const circleGroupData = Object.values(
 )
 
 /**
+ * Weapon type icons
+ */
+export const WEAPON_TYPE_ICON = {
+    melee: 'fa-light fa-sword',
+    ranged: 'fa-light fa-bow-arrow',
+    thrown: 'fa-light fa-bullseye-arrow',
+    unarmed: 'fa-light fa-hand-fist'
+}
+
+/**
  * Activation type icons
  */
 export const ACTIVATION_TYPE_ICON = {
