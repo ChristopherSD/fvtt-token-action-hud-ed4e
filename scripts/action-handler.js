@@ -174,7 +174,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             ]
             let systemActions = systemProperties.map(e => {
                     return {
-                        id: null,
+                        id: `action_system_${e}`,
                         name: this.i18n.localize(e), // localize in system
                         encodedValue: ["toggle", mapPropToActionID[e]].join(this.delimiter),
                         cssClass: this.actor.system["usekarma"] === "true" ? 'toggle active' : 'toggle'
@@ -214,12 +214,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             if (!isCreature) {
                 otherActions.push(
                     {
-                        id: null,
+                        id: 'action_other_newDay',
                         name: this.i18n.localize("earthdawn.n.newDay"),
                         encodedValue: ["newday", "newday"].join(this.delimiter),
                     },
                     {
-                        id: null,
+                        id: 'action_other_halfMagic',
                         name: this.i18n.localize("earthdawn.h.halfMagic"),
                         encodedValue: ["halfmagic", "halfmagic"].join(this.delimiter),
                     }
@@ -244,7 +244,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             // create action for each attribute
             let attributeActions = ATTRIBUTES.map(e => {
                     return {
-                        id: null,
+                        id: `action_attribute_${e}`,
                         name: this.i18n.localize(
                             this.abbreviateAttributes
                                 ? ATTRIBUTES_ABBREVIATED[e]
