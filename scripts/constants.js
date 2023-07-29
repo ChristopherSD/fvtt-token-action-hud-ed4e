@@ -26,7 +26,8 @@ export const ACTION_TYPE = {
     spell: 'earthdawn.s.spell',
     matrix: 'earthdawn.m.matrix',
     item: 'tokenActionHud.ed4e.item',
-    utility: 'tokenActionHud.ed4e.utility'
+    utility: 'tokenActionHud.ed4e.utility',
+    weaponAttack: 'earthdawn.a.attack'
 }
 
 /**
@@ -169,6 +170,7 @@ export const PROFICIENCY_LEVEL_ICON = {
 export const GROUP = {
     attributes: { id: 'attributes', name: 'earthdawn.a.attributes', type: 'system' },
     combat: { id: 'combat', name: 'tokenActionHud.combat', type: 'system' },
+    combatUtilities: { id: 'combatUtilities', name: 'tokenActionHud.combat', type: 'system' },
     other: { id: 'other', name: 'earthdawn.o.other', type: 'system' },
     system: { id: 'system', name: 'tokenActionHud.ed4e.system', type: 'system' },
     favorites: { id: 'favorites', name: 'tokenActionHud.ed4e.groupTitles.favorites', type: 'system'},

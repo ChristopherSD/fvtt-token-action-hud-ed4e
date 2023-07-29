@@ -113,6 +113,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 this.#buildTalentsOrSkill('skill'),
                 this.#buildSpells(),
                 this.#buildInventory(),
+                this.#buildCombat()
             ]);
             this.#buildGeneral();
             this.#buildUtility();
@@ -515,6 +516,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }*/
             const actionTypeName = `${coreModule.api.Utils.i18n(ACTION_TYPE[actionType])}: ` ?? '';
             const listName = `${actionTypeName}${name}`;
+            if (!listName) coreModule.api.Logger.debug("No list name for: ", {actionType, entity, groupData});
             let cssClass = '';
             if (Object.hasOwn(entity, 'disabled')) {
                 const active = (!entity.disabled) ? ' active' : '';
@@ -778,10 +780,75 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             })
 
             // Create group data
-            const groupData = { id: 'combat', type: 'system' }
+            const groupData = { id: 'combatUtilities', type: 'system' }
 
             // Add actions to HUD
             this.addActions(actions, groupData)
+        }
+
+        async #buildCombat() {
+            // weapons
+            const weaponAttackGroup = {
+                id: 'weaponAttack',
+                name: this.i18n.localize('tokenActionHud.ed4e.attack'),
+                type: 'system'
+            }
+            const weapons = this.actor.items.filter(i => i.type === "weapon" && i.system.worn);
+            const weaponActions = await Promise.all(
+                weapons.map(async w => await this.#getAction("weaponAttack", w, weaponAttackGroup))
+            );
+            this.addActions(weaponActions, weaponAttackGroup);
+
+            // tactics
+            /*const tacticsProperties = [
+                "earthdawn.c.combatOptionsAggressive",
+                "earthdawn.c.combatOptionsDefensive",
+                "earthdawn.c.combatModifierHarried",
+                "earthdawn.c.combatModifierKnockedDown"
+            ]
+
+            const mapPropToActionID = {
+                "earthdawn.c.combatOptionsAggressive": "tactics.aggressive",
+                "earthdawn.c.combatOptionsDefensive": "tactics.defensive",
+                "earthdawn.c.combatModifierHarried": "tactics.harried",
+                "earthdawn.c.combatModifierKnockedDown": "tactics.knockeddown",
+            }
+
+            let tacticsActions = tacticsProperties.map( e => {
+                    return {
+                        name: this.i18n(e), // localize in system
+                        id: null,
+                        encodedValue: ['toggle', token.id, mapPropToActionID[e]].join(this.delimiter),
+                        cssClass: actor.system.tactics[mapPropToActionID[e].split(".")[1]] === true ? 'active' : ''
+                    }
+                }
+            ).filter(s => !!s) // filter out nulls
+                .sort((a,b) => a.name.localeCompare(b.name));
+            let tacticsCat = this.initializeEmptySubcategory();
+            tacticsCat.actions = tacticsActions;
+
+            this._combineSubcategoryWithCategory(result, `${this.i18n("earthdawn.o.option")} & ${this.i18n("earthdawn.m.modifier")}`, tacticsCat);
+
+            // actions
+            let actionsCat = this.initializeEmptySubcategory();
+            actionsCat.actions = [
+                {
+                    name: this.i18n("earthdawn.t.takeDamage"),
+                    id: null,
+                    encodedValue: ["takedamage", token.id, "takedamage"].join(this.delimiter),
+                },
+                {
+                    name: this.i18n("earthdawn.c.combatOptionsKnockdownTest"),
+                    id: null,
+                    encodedValue: ["knockdowntest", token.id, "knockdowntest"].join(this.delimiter),
+                },
+                {
+                    name: this.i18n("earthdawn.c.combatOptionsJumpUp"),
+                    id: null,
+                    encodedValue: ["jumpup", token.id, "jumpup"].join(this.delimiter),
+                },
+            ];
+            this._combineSubcategoryWithCategory(result, this.i18n("earthdawn.a.actions"), actionsCat);*/
         }
     }
 })

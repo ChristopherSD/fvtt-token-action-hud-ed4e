@@ -101,7 +101,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 id: 'utility',
                 name: coreModule.api.Utils.i18n('tokenActionHud.utility'),
                 groups: [
-                    { ...groups.combat, nestId: 'utility_combat' },
+                    { ...groups.combatUtilities, nestId: 'utility_combatUtilities' },
                     { ...groups.token, nestId: 'utility_token' },
                 ]
             }
