@@ -208,7 +208,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     info1: {
                         text: `${this.actor.system.recoverytestscurrent}/${this.actor.system.recoverytestsrefreshFinal}`
                     }
-                    //tooltip: this.i18n.localize("tokenActionHud.ed4e.tooltips.recoveryTest")
                 }
             ];
             if (!isCreature) {
@@ -261,7 +260,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         }
                     }
                 }
-            )//.filter(s => !!s); // filter out nulls
+            )
 
             // create group data
             const attributesGroupData = {
