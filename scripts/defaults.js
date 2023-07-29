@@ -19,6 +19,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 id: 'general',
                 name: coreModule.api.Utils.i18n('tokenActionHud.ed4e.groupTitles.general'),
                 groups: [
+                    { ...groups.attributes, nestId: 'general_attributes'},
                     { ...groups.other, nestId: 'general_other'},
                     { ...groups.system, nestId: 'general_system'}
                 ]
@@ -29,14 +30,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 name: coreModule.api.Utils.i18n('tokenActionHud.ed4e.groupTitles.favorites'),
                 groups: [
                     { ...groups.favorites, nestId: 'favorites_favorites'}
-                ]
-            },
-            {
-                nestId: 'attributes',
-                id: 'attributes',
-                name: coreModule.api.Utils.i18n('tokenActionHud.ed4e.groupTitles.attributes'),
-                groups: [
-                    { ...groups.attributes, nestId: 'attributes_attributes'}
                 ]
             },
             {
