@@ -86,8 +86,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 name: coreModule.api.Utils.i18n('earthdawn.c.combat'),
                 groups: [
                     { ...groups.weaponAttack, nestId: 'combat_weaponAttack'},
-                    { ...groups.optionsModifier, nestId: 'combate_optionsModifier'},
-                    { ...groups.actions, nestId: 'combat_actions'},
+                    { ...groups.optionsModifier, nestId: 'combat_optionsModifier'},
+                    { ...groups.combatActions, nestId: 'combat_actions'},
                 ]
             },
             {

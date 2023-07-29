@@ -141,10 +141,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          * @returns {object}
          *
          */
-         async #buildMultipleTokenActions () {
-             this.#buildGeneral();
-             this.#buildUtility();
-         }
+        async #buildMultipleTokenActions () {
+            this.#buildGeneral();
+            this.#buildUtility();
+        }
 
         #buildGeneral() {
             this.#buildAttributes();
@@ -294,7 +294,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             };
 
             let favoriteActions = await Promise.all(favoriteItems.map(async item =>
-                    await this.#getAction(item.type, item, favoritesGroupData)
+                await this.#getAction(item.type, item, favoritesGroupData)
             ));
             favoriteActions.sort((a,b) => a.name.localeCompare(b.name));
 
@@ -386,7 +386,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 groupMappings[`${discipline}Spells`] = {
                     discipline: discipline,
                     name: discipline.charAt(0).toUpperCase() + discipline.slice(1)
-                        //`${this.i18n.localize(`tokenActionHud.ed4e.disciplines.${discipline}`)}`
+                    //`${this.i18n.localize(`tokenActionHud.ed4e.disciplines.${discipline}`)}`
                 }
             }
 
@@ -800,7 +800,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             this.addActions(weaponActions, weaponAttackGroup);
 
             // tactics
-            /*const tacticsProperties = [
+            const tacticsProperties = [
                 "earthdawn.c.combatOptionsAggressive",
                 "earthdawn.c.combatOptionsDefensive",
                 "earthdawn.c.combatModifierHarried",
@@ -816,39 +816,49 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             let tacticsActions = tacticsProperties.map( e => {
                     return {
-                        name: this.i18n(e), // localize in system
-                        id: null,
-                        encodedValue: ['toggle', token.id, mapPropToActionID[e]].join(this.delimiter),
-                        cssClass: actor.system.tactics[mapPropToActionID[e].split(".")[1]] === true ? 'active' : ''
+                        id: `combatTactic_${e}`,
+                        name: this.i18n.localize(e), // localize in system
+                        encodedValue: ['toggle', mapPropToActionID[e]].join(this.delimiter),
+                        cssClass: this.actor.system.tactics[mapPropToActionID[e].split(".")[1]] === true
+                            ? 'toggle active'
+                            : 'toggle'
                     }
                 }
-            ).filter(s => !!s) // filter out nulls
-                .sort((a,b) => a.name.localeCompare(b.name));
-            let tacticsCat = this.initializeEmptySubcategory();
-            tacticsCat.actions = tacticsActions;
+            ).sort((a,b) => a.name.localeCompare(b.name));
 
-            this._combineSubcategoryWithCategory(result, `${this.i18n("earthdawn.o.option")} & ${this.i18n("earthdawn.m.modifier")}`, tacticsCat);
+            const optionsModifier =  {
+                id: 'optionsModifier',
+                name: 'earthdawn.c.combatOptions',
+                type: 'system'
+            }
+
+            this.addActions(tacticsActions, optionsModifier);
 
             // actions
-            let actionsCat = this.initializeEmptySubcategory();
-            actionsCat.actions = [
+
+            const combatActionGroup = {
+                id: 'combatActions',
+                name: this.i18n.localize('earthdawn.a.actions'),
+                type: 'system'
+            }
+            const combatActions = [
                 {
-                    name: this.i18n("earthdawn.t.takeDamage"),
-                    id: null,
-                    encodedValue: ["takedamage", token.id, "takedamage"].join(this.delimiter),
+                    id: 'combatAction_takeDamage',
+                    name: this.i18n.localize("earthdawn.t.takeDamage"),
+                    encodedValue: ["takedamage", "takedamage"].join(this.delimiter),
                 },
                 {
-                    name: this.i18n("earthdawn.c.combatOptionsKnockdownTest"),
-                    id: null,
-                    encodedValue: ["knockdowntest", token.id, "knockdowntest"].join(this.delimiter),
+                    id: 'combatAction_knockdownTest',
+                    name: this.i18n.localize("earthdawn.c.combatOptionsKnockdownTest"),
+                    encodedValue: ["knockdowntest", "knockdowntest"].join(this.delimiter),
                 },
                 {
-                    name: this.i18n("earthdawn.c.combatOptionsJumpUp"),
-                    id: null,
-                    encodedValue: ["jumpup", token.id, "jumpup"].join(this.delimiter),
+                    id: 'combatAction_jumpUp',
+                    name: this.i18n.localize("earthdawn.c.combatOptionsJumpUp"),
+                    encodedValue: ["jumpup", "jumpup"].join(this.delimiter),
                 },
             ];
-            this._combineSubcategoryWithCategory(result, this.i18n("earthdawn.a.actions"), actionsCat);*/
+            this.addActions(combatActions, combatActionGroup);
         }
     }
 })
