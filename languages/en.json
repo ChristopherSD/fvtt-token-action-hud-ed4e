@@ -14,8 +14,9 @@
       "forged": "Forged",
       "groupTitles": {
         "attributes": "Attributes",
+        "favorites": "Favorites",
         "general": "General",
-        "favorites": "Favorites"
+        "matrix": "Matrix"
       },
       "infoTitles": {
         "attributeStep": "Attribute Step",
@@ -40,6 +41,8 @@
       "tooltips": {
         "attributeTest": "Roll a {attribute} test.",
         "info": {
+          "matrixSpell": "Spell in Matrix",
+          "matrixThreads": "Threads Active/Required",
           "weaponAmmo": "Current Ammo",
           "weaponRange": "Range (short/long)",
           "weaponStepTotal": "Damage step total<br>(Weapon + Forged + Attribute)"

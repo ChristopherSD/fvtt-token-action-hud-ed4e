@@ -24,7 +24,7 @@ export const ACTION_TYPE = {
     talent: 'earthdawn.t.talent',
     skill: 'earthdawn.s.skill',
     spell: 'earthdawn.s.spell',
-    matrix: 'earthdawn.m.matrix',
+    matrix: 'tokenActionHud.ed4e.groupTitles.matrix',
     item: 'tokenActionHud.ed4e.item',
     utility: 'tokenActionHud.ed4e.utility',
     weaponAttack: 'earthdawn.a.attack'
@@ -193,6 +193,7 @@ export const GROUP = {
     na: { id: 'na', name: 'tokenActionHud.ed4e.na', type: 'system'},
     token: { id: 'token', name: 'tokenActionHud.token', type: 'system' },
     utility: { id: 'utility', name: 'tokenActionHud.utility', type: 'system' },
+    matrices: { id: 'matrices', name: 'tokenActionHud.ed4e.groupTitles.matrix', type: 'system' },
     ...circleGroupData,
     ...disciplineGroupData,
 }

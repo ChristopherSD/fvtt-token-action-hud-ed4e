@@ -81,6 +81,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 ]
             },
             {
+                nestId: 'matrices',
+                id: 'matrices',
+                name: coreModule.api.Utils.i18n('tokenActionHud.ed4e.groupTitles.matrix')
+            },
+            {
                 nestId: 'combat',
                 id: 'combat',
                 name: coreModule.api.Utils.i18n('earthdawn.c.combat'),

@@ -112,6 +112,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 this.#buildTalentsOrSkill('talent'),
                 this.#buildTalentsOrSkill('skill'),
                 this.#buildSpells(),
+                this.#buildMatrices(),
                 this.#buildInventory(),
                 this.#buildCombat()
             ]);
@@ -859,6 +860,54 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 },
             ];
             this.addActions(combatActions, combatActionGroup);
+        }
+
+        async #buildMatrices() {
+            const matrices = this.actor.items.filter(i => i.type === "spellmatrix");
+
+            // exit early if there are no matrices
+            if (matrices.length < 1) return;
+
+            const matrixParentGroupData = {
+                id: 'matrices',
+            }
+
+            for (const matrix of matrices) {
+                const matrixGroupData = {
+                    id: `matrix_${matrix.id}`,
+                    name: matrix.name,
+                    type: 'system-derived',
+                    selected: true,
+                    info1: {
+                        text: matrix.system.currentspell,
+                        info: this.i18n.localize('tokenActionHud.ed4e.tooltips.info.matrixSpell'),
+                        class: 'tah-spotlight'
+                    },
+                    info2: {
+                        text: `${matrix.system.totalthreads}/${matrix.system.totalthreadsneeded}`,
+                        title: this.i18n.localize('tokenActionHud.ed4e.tooltips.info.matrixThreads')
+                    }
+                }
+
+                const actionNameMapping = {
+                    matrixAttune: 'earthdawn.a.attune',
+                    matrixWeave: 'earthdawn.m.matrixWeaveRed',
+                    matrixCast: 'earthdawn.m.matrixCastRed',
+                    matrixClear: 'earthdawn.m.matrixClearRed'
+                }
+
+                const matrixActions = Array.from(Object.entries(actionNameMapping), ([key, value]) => {
+                    return {
+                        id: matrix.id,
+                        name: this.i18n.localize(value),
+                        encodedValue: [key, matrix.id].join(this.delimiter),
+                        selected: true
+                    };
+                })
+
+                await this.addGroup(matrixGroupData, matrixParentGroupData, true);
+                this.addActions(matrixActions, matrixGroupData);
+            }
         }
     }
 })
