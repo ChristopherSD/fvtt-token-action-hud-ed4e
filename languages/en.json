@@ -11,9 +11,12 @@
       "disciplines": {
 
       },
-      "favorites": "Favorites",
       "forged": "Forged",
-      "general": "General",
+      "groupTitles": {
+        "attributes": "Attributes",
+        "general": "General",
+        "favorites": "Favorites"
+      },
       "infoTitles": {
         "attributeStep": "Attribute Step"
       },

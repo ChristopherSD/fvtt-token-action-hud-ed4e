@@ -169,7 +169,7 @@ export const GROUP = {
     attributes: { id: 'attributes', name: 'earthdawn.a.attributes', type: 'system' },
     other: { id: 'other', name: 'earthdawn.o.other', type: 'system' },
     system: { id: 'system', name: 'tokenActionHud.ed4e.system', type: 'system' },
-    favorites: { id: 'favorites', name: 'tokenActionHud.ed4e.favorites', type: 'system'},
+    favorites: { id: 'favorites', name: 'tokenActionHud.ed4e.groupTitles.favorites', type: 'system'},
     weapons: { id: 'weapons', name: 'earthdawn.w.weapons', type: 'system'},
     armors: { id: 'armors', name: 'earthdawn.a.armors', type: 'system'},
     shields: { id: 'shields', name: 'earthdawn.s.shields', type: 'system'},
