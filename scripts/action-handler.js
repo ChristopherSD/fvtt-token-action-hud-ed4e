@@ -97,7 +97,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     await this.#buildCreatureActions();
                 }
             } else {
-                //await this._buildMultipleTokenActions();
+                await this.#buildMultipleTokenActions();
             }
         }
 
@@ -115,6 +115,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 this.#buildInventory(),
             ]);
             this.#buildGeneral();
+            this.#buildUtility();
             /*this._buildMatrixCategory();
             this._buildSkillsCategory();
             this._buildItemsCategory();
@@ -137,33 +138,25 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          * Build Multiple Token Actions
          * @private
          * @returns {object}
-         async _buildMultipleTokenActions () {
-         this._buildGeneralCategory();
-         this._buildFavoritesCategory();
-         this._buildTalentsCategory();
-         this._buildMatrixCategory();
-         this._buildSkillsCategory();
-         this._buildItemsCategory();
-         this._buildAttacksCategory();
-         this._buildCreaturePowersCategory();
-         this._buildCreatureManeuversCategory();
-         this._buildCombatCategory();
-         }*/
+         *
+         */
+         async #buildMultipleTokenActions () {
+             this.#buildGeneral();
+             this.#buildUtility();
+         }
 
         #buildGeneral() {
-            coreModule.api.Logger.debug(`Building group "General"`);
-
-            const isCreature = 'creature' === this.actor.type;
-
             this.#buildAttributes();
-            this.#buildOther(isCreature);
-            this.#buildSystem(isCreature);
+            this.#buildOther();
+            if (this.actor) this.#buildSystem();
         }
 
-        #buildSystem(isCreature) {
+        #buildSystem() {
             //**********************
             // Create actions for 'System' category
             //**********************
+
+            const isCreature = 'creature' === this.actor?.type;
 
             const mapPropToActionID = {
                 "earthdawn.u.useKarma": "usekarma"
@@ -195,10 +188,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
 
-        #buildOther(isCreature) {
+        #buildOther() {
             //**********************
             // Create actions for 'Other' category
             //**********************
+
+            const isCreature = 'creature' === this.actor?.type;
 
             let otherActions = [
                 {
@@ -206,7 +201,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     name: this.i18n.localize("earthdawn.r.recovery"),
                     encodedValue: ["recovery", "recovery"].join(this.delimiter),
                     info1: {
-                        text: `${this.actor.system.recoverytestscurrent}/${this.actor.system.recoverytestsrefreshFinal}`
+                        text: this.actor
+                            ? `${this.actor.system.recoverytestscurrent}/${this.actor.system.recoverytestsrefreshFinal}`
+                            : '',
+                        title: this.actor
+                            ? this.i18n.localize('tokenActionHud.ed4e.infoTitles.recoveryTests')
+                            : ''
                     }
                 }
             ];
@@ -255,8 +255,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                             {attribute: this.i18n.localize(e)}
                         ),
                         info1: {
-                            text: `${this.actor.system[`${e}Step`]}`,
-                            title: this.i18n.localize('tokenActionHud.ed4e.infoTitles.attributeStep')
+                            text: this.actor ? `${this.actor.system[`${e}Step`]}` : '',
+                            title: this.actor
+                                ? this.i18n.localize('tokenActionHud.ed4e.infoTitles.attributeStep')
+                                : ''
                         }
                     }
                 }
@@ -729,5 +731,57 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         #getTooltipData(entity) {}
 
         #getTooltip(tooltipData) {}
+
+        #buildUtility() {
+            const actionType = 'utility';
+
+            // Set combat types
+            const combatTypes = {
+                initiative: { id: 'initiative', name: coreModule.api.Utils.i18n('tokenActionHud.ed4e.rollInitiative') },
+                endTurn: { id: 'endTurn', name: coreModule.api.Utils.i18n('tokenActionHud.endTurn') }
+            };
+
+            // Delete endTurn for multiple tokens
+            if (game.combat?.current?.tokenId !== this.token?.id) delete combatTypes.endTurn;
+
+            // Get actions
+            const actions = Object.entries(combatTypes).map((combatType) => {
+                const id = combatType[1].id;
+                const name = combatType[1].name;
+                const actionTypeName = `${coreModule.api.Utils.i18n(ACTION_TYPE[actionType])}: ` ?? '';
+                const listName = `${actionTypeName}${name}`
+                const encodedValue = [actionType, id].join(this.delimiter)
+                const info1 = {}
+                let cssClass = ''
+                if (combatType[0] === 'initiative' && game.combat) {
+                    const tokenIds = canvas.tokens.controlled.map((token) => token.id)
+                    const combatants = game.combat.combatants.filter((combatant) => tokenIds.includes(combatant.tokenId))
+
+                    // Get initiative for single token
+                    if (combatants.length === 1) {
+                        const currentInitiative = combatants[0].initiative
+                        info1.class = 'tah-spotlight'
+                        info1.text = currentInitiative
+                    }
+
+                    const active = combatants.length > 0 && (combatants.every((combatant) => combatant?.initiative)) ? ' active' : ''
+                    cssClass = `toggle${active}`
+                }
+                return {
+                    id,
+                    name,
+                    encodedValue,
+                    info1,
+                    cssClass,
+                    listName
+                }
+            })
+
+            // Create group data
+            const groupData = { id: 'combat', type: 'system' }
+
+            // Add actions to HUD
+            this.addActions(actions, groupData)
+        }
     }
 })

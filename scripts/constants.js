@@ -21,11 +21,12 @@ export const REQUIRED_CORE_MODULE_VERSION = '1.4'
  * Type of TAH actions
  */
 export const ACTION_TYPE = {
-    'talent': 'earthdawn.t.talent',
-    'skill': 'earthdawn.s.skill',
-    'spell': 'earthdawn.s.spell',
-    'matrix': 'earthdawn.m.matrix',
-    'item': 'tokenActionHud.ed4e.item'
+    talent: 'earthdawn.t.talent',
+    skill: 'earthdawn.s.skill',
+    spell: 'earthdawn.s.spell',
+    matrix: 'earthdawn.m.matrix',
+    item: 'tokenActionHud.ed4e.item',
+    utility: 'tokenActionHud.ed4e.utility'
 }
 
 /**
@@ -167,6 +168,7 @@ export const PROFICIENCY_LEVEL_ICON = {
  */
 export const GROUP = {
     attributes: { id: 'attributes', name: 'earthdawn.a.attributes', type: 'system' },
+    combat: { id: 'combat', name: 'tokenActionHud.combat', type: 'system' },
     other: { id: 'other', name: 'earthdawn.o.other', type: 'system' },
     system: { id: 'system', name: 'tokenActionHud.ed4e.system', type: 'system' },
     favorites: { id: 'favorites', name: 'tokenActionHud.ed4e.groupTitles.favorites', type: 'system'},
@@ -189,6 +191,8 @@ export const GROUP = {
     na: { id: 'na', name: 'tokenActionHud.ed4e.na', type: 'system'},
     ...circleGroupData,
     ...disciplineGroupData,
+    token: { id: 'token', name: 'tokenActionHud.token', type: 'system' },
+    utility: { id: 'utility', name: 'tokenActionHud.utility', type: 'system' },
     //...disciplineGroupData,
     /*_1stLevelSpells: { id: '1st-level-spells', name: 'tokenActionHud.dnd5e.1stLevelSpells', type: 'system' },
     _2ndLevelSpells: { id: '2nd-level-spells', name: 'tokenActionHud.dnd5e.2ndLevelSpells', type: 'system' },

@@ -18,11 +18,13 @@
         "favorites": "Favorites"
       },
       "infoTitles": {
-        "attributeStep": "Attribute Step"
+        "attributeStep": "Attribute Step",
+        "recoveryTests": "Recovery Test (current/max)"
       },
       "item": "Item",
       "na": "N/A",
       "options": "Options",
+      "rollInitiative": "Roll Initiative",
       "settings": {
         "abbreviateAttributes": {
           "hint": "Display attribute names as a three-character abbreviation",
@@ -44,7 +46,8 @@
         },
         "recoveryTest": "Roll a recovery test."
       },
-      "unequipped": "Unequipped"
+      "unequipped": "Unequipped",
+      "utility": "Utility"
     }
   }
 }
