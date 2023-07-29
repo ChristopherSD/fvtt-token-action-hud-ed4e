@@ -108,13 +108,13 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          */
         async #buildCharacterActions() {
             await Promise.all([
+                this.#buildFavorites(),
                 this.#buildTalentsOrSkill('talent'),
                 this.#buildTalentsOrSkill('skill'),
                 this.#buildSpells(),
-                this.#buildInventory()
+                this.#buildInventory(),
             ]);
             this.#buildGeneral();
-            this.#buildFavorites();
             /*this._buildMatrixCategory();
             this._buildSkillsCategory();
             this._buildItemsCategory();
@@ -151,81 +151,16 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          }*/
 
         #buildGeneral() {
+            coreModule.api.Logger.debug(`Building group "General"`);
+
             const isCreature = 'creature' === this.actor.type;
 
-            //**********************
-            // Create attribute check actions
-            //**********************
+            this.#buildAttributes();
+            this.#buildOther(isCreature);
+            this.#buildSystem(isCreature);
+        }
 
-            // create action for each attribute
-            let attributeActions = ATTRIBUTES.map( e => {
-                    return {
-                        id: null,
-                        name: this.i18n.localize(
-                            this.abbreviateAttributes
-                                ? ATTRIBUTES_ABBREVIATED[e]
-                                : ATTRIBUTES_FULL_NAME[e]
-                        ), // localize in system
-                        encodedValue: ["attribute", this.token.id, e].join(this.delimiter),
-                        tooltip: this.i18n.format(
-                            "tokenActionHud.ed4e.tooltips.attributeTest",
-                            {attribute: this.i18n.localize(e)}
-                        ),
-                        info1: {
-                            text: `${this.actor.system[`${e}Step`]}`,
-                            title: this.i18n.localize('tokenActionHud.ed4e.infoTitles.attributeStep')}
-                    }
-                }
-            ).filter(s => !!s); // filter out nulls
-
-            // create group data
-            const attributesGroupData = {
-                id: 'attributes',
-                type: 'system'
-            };
-
-            // add actions to action list
-            this.addActions(attributeActions, attributesGroupData);
-
-            //**********************
-            // Create actions for 'Other' category
-            //**********************
-
-            let otherActions = [
-                {
-                    id: null,
-                    name: this.i18n.localize("earthdawn.r.recovery"),
-                    encodedValue: ["recovery", this.token.id, "recovery"].join(this.delimiter),
-                    info1: {
-                        text: `${this.actor.system.recoverytestscurrent}/${this.actor.system.recoverytestsrefreshFinal}`
-                    }
-                    //tooltip: this.i18n.localize("tokenActionHud.ed4e.tooltips.recoveryTest")
-                }
-            ];
-            if (!isCreature) {
-                otherActions.push(
-                    {
-                        id: null,
-                        name: this.i18n.localize("earthdawn.n.newDay"),
-                        encodedValue: ["newday", this.token.id, "newday"].join(this.delimiter),
-                    },
-                    {
-                        id: null,
-                        name: this.i18n.localize("earthdawn.h.halfMagic"),
-                        encodedValue: ["halfmagic", this.token.id, "halfmagic"].join(this.delimiter),
-                    }
-                )
-            }
-
-            // create group data
-            const otherGroupData = {
-                id: 'other',
-                type: 'system'
-            };
-
-            // add actions to action list
-            this.addActions(otherActions, otherGroupData);
-
+        #buildSystem(isCreature) {
             //**********************
             // Create actions for 'System' category
             //**********************
@@ -237,16 +172,16 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const systemProperties = [
                 "earthdawn.u.useKarma"
             ]
-            let systemActions = systemProperties.map( e => {
+            let systemActions = systemProperties.map(e => {
                     return {
                         id: null,
                         name: this.i18n.localize(e), // localize in system
-                        encodedValue: ["toggle", this.token.id, mapPropToActionID[e]].join(this.delimiter),
+                        encodedValue: ["toggle", mapPropToActionID[e]].join(this.delimiter),
                         cssClass: this.actor.system["usekarma"] === "true" ? 'toggle active' : 'toggle'
                     }
                 }
             ).filter(s => !!s) // filter out nulls
-                .sort((a,b) => a.name.localeCompare(b.name));
+                .sort((a, b) => a.name.localeCompare(b.name));
 
             // create group data
             const systemGroupData = {
@@ -260,7 +195,85 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
 
-        #buildFavorites() {
+        #buildOther(isCreature) {
+            //**********************
+            // Create actions for 'Other' category
+            //**********************
+
+            let otherActions = [
+                {
+                    id: null,
+                    name: this.i18n.localize("earthdawn.r.recovery"),
+                    encodedValue: ["recovery", "recovery"].join(this.delimiter),
+                    info1: {
+                        text: `${this.actor.system.recoverytestscurrent}/${this.actor.system.recoverytestsrefreshFinal}`
+                    }
+                    //tooltip: this.i18n.localize("tokenActionHud.ed4e.tooltips.recoveryTest")
+                }
+            ];
+            if (!isCreature) {
+                otherActions.push(
+                    {
+                        id: null,
+                        name: this.i18n.localize("earthdawn.n.newDay"),
+                        encodedValue: ["newday", "newday"].join(this.delimiter),
+                    },
+                    {
+                        id: null,
+                        name: this.i18n.localize("earthdawn.h.halfMagic"),
+                        encodedValue: ["halfmagic", "halfmagic"].join(this.delimiter),
+                    }
+                )
+            }
+
+            // create group data
+            const otherGroupData = {
+                id: 'other',
+                type: 'system'
+            };
+
+            // add actions to action list
+            this.addActions(otherActions, otherGroupData);
+        }
+
+        #buildAttributes() {
+            //**********************
+            // Create attribute check actions
+            //**********************
+
+            // create action for each attribute
+            let attributeActions = ATTRIBUTES.map(e => {
+                    return {
+                        id: null,
+                        name: this.i18n.localize(
+                            this.abbreviateAttributes
+                                ? ATTRIBUTES_ABBREVIATED[e]
+                                : ATTRIBUTES_FULL_NAME[e]
+                        ), // localize in system
+                        encodedValue: ["attribute", e].join(this.delimiter),
+                        tooltip: this.i18n.format(
+                            "tokenActionHud.ed4e.tooltips.attributeTest",
+                            {attribute: this.i18n.localize(e)}
+                        ),
+                        info1: {
+                            text: `${this.actor.system[`${e}Step`]}`,
+                            title: this.i18n.localize('tokenActionHud.ed4e.infoTitles.attributeStep')
+                        }
+                    }
+                }
+            )//.filter(s => !!s); // filter out nulls
+
+            // create group data
+            const attributesGroupData = {
+                id: 'attributes',
+                type: 'system'
+            };
+
+            // add actions to action list
+            this.addActions(attributeActions, attributesGroupData);
+        }
+
+        async #buildFavorites() {
             if ('creature' === this.actor.type) return;
 
             const favoriteItems = Array.from(
@@ -269,33 +282,19 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 (e => 'true' === e.system.favorite)
             );
 
-            let favoriteActions = favoriteItems.map(e => {
-                try {
-                    const itemID = e.id;
-                    const macroType = e.type.toLowerCase();
-                    const name = e.name;
-                    let infoText = e.system.hasOwnProperty("ranks") ? `${e.system.ranks}` : null;
-                    let encodedValue = [macroType, this.token.id, itemID].join(this.delimiter);
-                    return {
-                        id: itemID,
-                        name: name,
-                        encodedValue: encodedValue,
-                        info1: {
-                            text: infoText
-                        }
-                    };
-                } catch (error) {
-                    error(e ?? 'No item in favorites');
-                    return null;
-                }
-            }).filter(s => !!s) // filter out nulls
-                .sort((a,b) => a.name.localeCompare(b.name));
+            // exit early if ther are no favorite items
+            if (favoriteItems.length < 1) return;
 
             // create group data
             const favoritesGroupData = {
                 id: 'favorites',
                 type: 'system'
             };
+
+            let favoriteActions = await Promise.all(favoriteItems.map(async item =>
+                    await this.#getAction(item.type, item, favoritesGroupData)
+            ));
+            favoriteActions.sort((a,b) => a.name.localeCompare(b.name));
 
             // add actions to action list
             this.addActions(favoriteActions, favoritesGroupData);
@@ -312,8 +311,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             // Early exit if no items exist
             if (talentsSkills.size === 0) return;
 
-            coreModule.api.Logger.debug(`Building category, type: ${type}`);
-            console.debug(`Building category, type: ${type}`);
+            coreModule.api.Logger.debug(`Building group "${type}s"`);
 
             // Map talents/skill by action type to new maps
             const actionTypeMap = new Map();
@@ -501,6 +499,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          * @private
          * @param {string} actionType
          * @param {object} entity
+         * @param {object} groupData
          * @returns {object}
          */
         async #getAction(actionType, entity, groupData) {
@@ -520,7 +519,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 const active = (!entity.disabled) ? ' active' : '';
                 cssClass = `toggle${active}`;
             }
-            const encodedValue = [actionType, this.token.id, id].join(this.delimiter);
+            const encodedValue = [actionType, id].join(this.delimiter);
             const img = coreModule.api.Utils.getImage(entity);
             const icon = this.#getItemIcons(entity);
             const icon1 = icon.icon1;
@@ -553,6 +552,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          * Get item info
          * @private
          * @param {object} item
+         * @param {object} groupData
          * @returns {object}
          */
         #getItemInfo(item, groupData) {
