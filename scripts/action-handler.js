@@ -204,7 +204,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     encodedValue: ["recovery", "recovery"].join(this.delimiter),
                     info1: {
                         text: this.actor
-                            ? `${this.actor.system.recoverytestscurrent}/${this.actor.system.recoverytestsrefreshFinal}`
+                            ? `${this.actor.system.recoverytestscurrent ?? 0}/${this.actor.system.recoverytestsrefreshFinal ?? 0}`
                             : '',
                         title: this.actor
                             ? this.i18n.localize('tokenActionHud.ed4e.infoTitles.recoveryTests')
