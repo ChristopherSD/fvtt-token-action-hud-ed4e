@@ -108,8 +108,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             {
                 nestId: 'effects',
                 id: 'effects',
-                name: 'TODO',
-                groups: []
+                name: coreModule.api.Utils.i18n('earthdawn.e.effects'),
+                groups: [
+                    { ...groups.effects, nestId: 'effects_effects' }
+                ]
             },
             {
                 nestId: 'utility',

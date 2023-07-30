@@ -121,6 +121,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 this.#buildSpells(),
                 this.#buildMatrices(),
                 this.#buildInventory(),
+                this.#buildEffects(),
                 this.#buildCombat()
             ]);
             this.#buildGeneral();
@@ -142,6 +143,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async #buildCreatureActions() {
             await Promise.all([
                 this.#buildPowers(),
+                this.#buildEffects(),
                 this.#buildCombat()
             ]);
             this.#buildGeneral();
@@ -527,6 +529,21 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
 
+        async #buildEffects() {
+            const actionType = 'effect';
+
+            const effects = this.actor.effects;
+
+            // exit early if no effects exist
+            if (effects.size === 0) return;
+
+            const effectMap = new Map();
+            for (const [effectId, effect] of effects.entries()) {
+                effectMap.set(effectId, effect);
+            }
+
+            await this.#buildActions(effectMap, { id: 'effects', nestId: 'effects_effects', type: 'system'}, actionType);
+        }
 
         /**
          * Build actions
@@ -765,7 +782,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     break;
             }
 
-            if (item.system.isthread) {
+            if (item.system?.isthread) {
                 icon3 = `<i class="fa-thin fa-wand-sparkles" title="${this.i18n.localize('earthdawn.t.threadItem')}"></i>`;
             }
 
