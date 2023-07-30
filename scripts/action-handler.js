@@ -33,6 +33,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         talentSkillGroupIds = null;
         spellGroupIds = null;
         inventoryGroupIds = null;
+        powerGroupIds = null;
 
         /**
          * Build System Actions
@@ -79,6 +80,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     (discipline, _) => `${discipline}Spells`
                 )
             )
+
+            this.powerGroupIds = [
+                'powerAttacks',
+                'powerManeuvers',
+                'powerPowers'
+            ];
 
             if (this.actor) {
                 if (this.actor.type === 'pc' || this.actor.type === 'npc') {
@@ -133,7 +140,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          * @returns {object}
          */
         async #buildCreatureActions() {
+            await Promise.all([
+                this.#buildPowers(),
+                this.#buildCombat()
+            ]);
             this.#buildGeneral();
+            this.#buildUtility();
         }
 
         /**
@@ -410,9 +422,53 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
 
+        async #buildPowers() {
+            // exit early if no items exist
+            if (this.items.size  < 1) return;
+
+            const actionType = 'power';
+            const powersMap = new Map();
+
+            for (const [itemId, itemEntity] of this.items) {
+                if (itemEntity.type === 'attack') {
+                    const powerType = itemEntity.system.powerType.toLowerCase();
+                    switch (powerType) {
+                        case 'attack':
+                            this.#addToMapOfMaps(powersMap, 'powerAttacks', itemId, itemEntity);
+                            break;
+                        case 'maneuver':
+                            this.#addToMapOfMaps(powersMap, 'powerManeuvers', itemId, itemEntity);
+                            break;
+                        case 'power':
+                            this.#addToMapOfMaps(powersMap, 'powerPowers', itemId, itemEntity);
+                            break;
+                    }
+                }
+            }
+
+            const groupNameMappings = {
+                powerAttacks: this.i18n.localize('earthdawn.a.attacks'),
+                powerManeuvers: this.i18n.localize('earthdawn.m.maneuvers'),
+                powerPowers: this.i18n.localize('earthdawn.p.powers')
+            };
+
+            for (const powerGroupId of this.powerGroupIds) {
+                if (!powersMap.has(powerGroupId)) continue;
+
+                const groupData = {
+                    id: powerGroupId,
+                    name: groupNameMappings[powerGroupId],
+                    type: 'system'
+                }
+
+                const powers = powersMap.get(powerGroupId);
+                await this.#buildActions(powers, groupData, actionType);
+            }
+        }
+
         async #buildInventory() {
             // exit early if no items exist
-            if (this.items.size === 0) return;
+            if (this.items.size < 1) return;
 
             const inventoryMap = new Map();
 
@@ -467,7 +523,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
                 const inventory = inventoryMap.get(groupId);
 
-                //console.debug("Building Inventory Actions. Inventory Map:", inventoryMap);
                 await this.#buildActions(inventory, groupData);
             }
         }
@@ -578,7 +633,30 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     if (item.system.strain > 0) {
                         info3 = {
                             text: item.system.strain.toString(),
-                            title: this.i18n.localize('earthdawn.s.strain')
+                            title: this.i18n.localize('earthdawn.s.strain'),
+                            class: 'tah-spotlight'
+                        };
+                    }
+                    break;
+                case 'attack':
+                    if (
+                        item.system.powerType !== 'Maneuver'
+                        && (item.system.attackstep > 0 || item.system.damagestep > 0)
+                    ) {
+                        info1 = {
+                            text: `${item.system.attackstep}`,
+                            title: this.i18n.localize('earthdawn.r.rollStep')
+                        };
+                        info2 = {
+                            text: `${item.system.damagestep}`,
+                            title: this.i18n.localize('earthdawn.d.damageStep')
+                        };
+                    }
+                    if (item.system.strain > 0) {
+                        info3 = {
+                            text: item.system.strain.toString(),
+                            title: this.i18n.localize('earthdawn.s.strain'),
+                            class: 'tah-spotlight'
                         };
                     }
                     break;
@@ -667,6 +745,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             switch (item.type) {
                 case 'talent':
                 case 'skill':
+                case 'attack':
                     if (item.system.strain > 0) {
                         icon1 = `<i class="fa-thin fa-droplet" title="${this.i18n.localize('earthdawn.s.strain')}"></i>`;
                     }

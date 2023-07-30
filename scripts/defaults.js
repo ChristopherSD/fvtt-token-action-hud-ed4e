@@ -25,6 +25,16 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 ]
             },
             {
+                nestId: 'powers',
+                id: 'powers',
+                name: coreModule.api.Utils.i18n('earthdawn.p.powers'),
+                groups: [
+                    { ...groups.powerAttacks, nestId: 'powers_powerAttacks'},
+                    { ...groups.powerManeuvers, nestId: 'powers_powerManeuvers'},
+                    { ...groups.powerPowers, nestId: 'powers_powerPowers'},
+                ]
+            },
+            {
                 nestId: 'favorites',
                 id: 'favorites',
                 name: coreModule.api.Utils.i18n('tokenActionHud.ed4e.groupTitles.favorites'),

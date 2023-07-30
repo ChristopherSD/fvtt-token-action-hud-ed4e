@@ -27,7 +27,8 @@ export const ACTION_TYPE = {
     matrix: 'tokenActionHud.ed4e.groupTitles.matrix',
     item: 'tokenActionHud.ed4e.item',
     utility: 'tokenActionHud.ed4e.utility',
-    weaponAttack: 'earthdawn.a.attack'
+    weaponAttack: 'earthdawn.a.attack',
+    power: 'earthdawn.p.power'
 }
 
 /**
@@ -194,6 +195,10 @@ export const GROUP = {
     token: { id: 'token', name: 'tokenActionHud.token', type: 'system' },
     utility: { id: 'utility', name: 'tokenActionHud.utility', type: 'system' },
     matrices: { id: 'matrices', name: 'tokenActionHud.ed4e.groupTitles.matrix', type: 'system' },
+    powers: { id: 'powers', name: 'earthdawn.p.powers', type: 'system'},
+    powerAttacks: { id: 'powerAttacks', name: 'earthdawn.a.attacks', type: 'system' },
+    powerManeuvers: { id: 'powerManeuvers', name: 'earthdawn.m.maneuvers', type: 'system' },
+    powerPowers: { id: 'powerPowers', name: 'earthdawn.p.powers', type: 'system' },
     ...circleGroupData,
     ...disciplineGroupData,
 }
