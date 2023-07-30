@@ -9,143 +9,153 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          * @param {string} encodedValue
          */
         async doHandleActionEvent(event, encodedValue) {
-            let payload = encodedValue.split('|');
+            let payload = encodedValue.split(this.delimiter);
 
-            if (payload.length !== 3) {
+            if (payload.length !== 2) {
                 super.throwInvalidValueErr();
             }
 
-            let macroType = payload[0];
-            let tokenId = payload[1];
-            let actionId = payload[2];
+            let actionType = payload[0];
+            let actionId = payload[1];
 
-            if (tokenId === 'multi') {
-                for (let t of canvas.tokens.controlled) {
-                    let idToken = t.id;
-                    await this._handleMacros(event, macroType, idToken, actionId);
+            if (!this.actor) {
+                for (const token of canvas.tokens.controlled) {
+                    const actor = token.actor;
+                    await this.#handleAction(event, actionType, actor, token, actionId);
                 }
             } else {
-                await this._handleMacros(event, macroType, tokenId, actionId);
+                await this.#handleAction(event, actionType, this.actor, this.token, actionId);
             }
         }
 
-        async _handleMacros(event, macroType, tokenId, actionId) {
-            let actor = super.getActor(tokenId);
-            switch (macroType) {
-                case 'skill':
-                // fall through
-                case 'talent':
-                    this.rollTalentMacro(event, tokenId, actionId);
-                    break;
-                case 'attack':
-                // fall through
-                case 'power':
-                // fall through
-                case 'maneuver':
-                    this.handleCreatureActionMacro(event, tokenId, actionId);
-                    break;
-                case 'inventory':
-                    this.rollInventoryMacro(event, tokenId, actionId);
-                    break;
-                case 'toggle':
-                    this.toggleDataProperty(event, tokenId, actionId);
-                    break;
-                case 'attribute':
-                    this.rollAttributeMacro(event, tokenId, actionId);
-                    break;
-                case 'recovery':
-                    actor.recoveryTest();
-                    break;
-                case 'newday':
-                    actor.newDay();
-                    break;
-                case 'halfmagic':
-                    actor.halfMagic();
-                    break;
-                case 'matrixAttune':
-                    actor.attuneMatrix(actor.items.get(actionId));
-                    break;
-                case 'matrixWeave':
-                    actor.weaveThread(actor.items.get(actionId));
-                    break;
-                case 'matrixCast':
-                    actor.castSpell(actor.items.get(actionId));
-                    break;
-                case 'matrixClear':
-                    actor.clearMatrix(actor.items.get(actionId));
-                    break;
-                case 'weaponAttack':
-                    actor.rollPrep({weaponID: actionId, rolltype: 'attack'});
-                    break;
-                case 'takedamage':
-                    this.takeDamage(actor);
-                    break;
-                case 'knockdowntest':
-                    actor.knockdownTest({});
-                    break;
-                case 'jumpup':
-                    actor.jumpUpTest();
-                    break;
+        async #handleAction(event, actionType, actor, token, actionId) {
+            if (this.isRenderItem()) {
+                if (['skill', 'talent', 'power', 'item', 'effect', 'spell'].includes(actionType)) {
+                    this.doRenderItem(actor, actionId);
+                }
+            } else {
+                switch (actionType) {
+                    case 'skill':
+                    // fall through
+                    case 'talent':
+                        this.rollTalentMacro(event, actor, token, actionId);
+                        break;
+                    case 'attack':
+                    // fall through
+                    case 'power':
+                    // fall through
+                    case 'maneuver':
+                        this.handleCreatureActionMacro(event, actor, token, actionId);
+                        break;
+                    case 'item':
+                        this.rollInventoryMacro(event, actor, token, actionId);
+                        break;
+                    case 'toggle':
+                        this.toggleDataProperty(event, actor, token, actionId);
+                        break;
+                    case 'attribute':
+                        this.rollAttributeMacro(event, actor, token, actionId);
+                        break;
+                    case 'utility':
+                        await this.#performUtilityAction(event, actor, token, actionId);
+                        break;
+                    case 'recovery':
+                        actor.recoveryTest();
+                        break;
+                    case 'newday':
+                        actor.newDay();
+                        break;
+                    case 'halfmagic':
+                        actor.halfMagic();
+                        break;
+                    case 'matrixAttune':
+                        actor.attuneMatrix(actor.items.get(actionId));
+                        break;
+                    case 'matrixWeave':
+                        actor.weaveThread(actor.items.get(actionId));
+                        break;
+                    case 'matrixCast':
+                        actor.castSpell(actor.items.get(actionId));
+                        break;
+                    case 'matrixClear':
+                        actor.clearMatrix(actor.items.get(actionId));
+                        break;
+                    case 'weaponAttack':
+                        actor.rollPrep({weaponID: actionId, rolltype: 'attack'});
+                        break;
+                    case 'takedamage':
+                        this.takeDamage(actor);
+                        break;
+                    case 'knockdowntest':
+                        actor.knockdownTest({});
+                        break;
+                    case 'jumpup':
+                        actor.jumpUpTest();
+                        break;
+                    case 'effect':
+                        if (this.isRenderItem()) actor.effects.get(actionId).sheet.render(true);
+                        break;
+                    default:
+                        if (this.isRenderItem()) this.doRenderItem(actor, actionId);
+                        break;
+                }
             }
         }
 
-        rollAttributeMacro(event, tokenId, actionId) {
-            const actor = super.getActor(tokenId);
+        rollAttributeMacro(event, actor, tokenId, actionId) {
             actor.rollPrep({ attribute: `${actionId.split('.').slice(-1)}Step`, name: actionId });
         }
 
-        rollTalentMacro(event, tokenId, actionId) {
-            const actor = super.getActor(tokenId);
+        rollTalentMacro(event, actor, tokenId, actionId) {
             actor.rollPrep({ talentID: actionId});
         }
 
-        rollInventoryMacro(event, tokenId, actionId) {
-            const actor = super.getActor(tokenId);
+        rollInventoryMacro(event, actor, tokenId, actionId) {
             const item = actor.items.get(actionId);
             if (item.type === 'equipment') {
                 item.sheet.render(true);
             } else if (['weapon', 'armor', 'shield'].indexOf(item.type) >= 0) {
-                this.toggleItemWornProperty(event, tokenId, actionId);
+                this.toggleItemWornProperty(event, actor, tokenId, actionId);
             } else {
                 //problem
                 Logger.error(item.type, " is not a valid actionId for rolling an inventory item")
             }
         }
 
-        toggleDataProperty(event, tokenId, actionId) {
-            const actor = super.getActor(tokenId);
+        toggleDataProperty(event, actor, tokenId, actionId) {
             if (actionId.includes("tactics")) {
                 const tactic = actionId.split('.')[1];
-                actor.update({
-                    data: {
-                        "tactics": {
-                            [tactic]: !actor.system.tactics[tactic]
-                        }
-                    }
-                })
+                const updateData = {system: {tactics: {}}};
+                updateData.system.tactics[tactic] = !actor.system.tactics[tactic];
+                actor.update(updateData);
             } else {
-                const currentValue = actor.data[actionId];
+                const currentValue = actor.system[actionId];
                 const valueType = typeof currentValue;
-                let newValue = valueType === "string" ? this._toggleBooleanString(currentValue) : !currentValue;
-                actor.update({
-                    data: {
-                        [actionId]: newValue
-                    }
-                })
+                const newValue = valueType === "string" ? this._toggleBooleanString(currentValue) : !currentValue;
+                const updateData = {system: {}};
+                updateData.system[actionId] = newValue;
+                actor.update(updateData);
+                console.debug("Current Value: ", currentValue)
+                console.debug("Value Type: ", valueType)
+                console.debug("New Value: ", newValue)
+                console.debug("Actor system data: ", actor.system[actionId])
             }
+            // Update HUD
+            Hooks.callAll('forceUpdateTokenActionHud');
         }
 
-        toggleItemWornProperty(event, tokenId, actionId) {
-            const actor = super.getActor(tokenId);
+        toggleItemWornProperty(event, actor, tokenId, actionId) {
             const item = actor.items.get(actionId);
             const currentValue = item.system['worn'];
             const valueType = typeof currentValue;
             let newValue = valueType === "string" ? this._toggleBooleanString(currentValue) : !currentValue;
             item.update({
-                data: {
+                system: {
                     worn: newValue
                 }
             })
+            // Update HUD
+            Hooks.callAll('forceUpdateTokenActionHud');
         }
 
         _toggleBooleanString(val) {
@@ -154,8 +164,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             return "false";
         }
 
-        handleCreatureActionMacro(event, tokenId, actionId) {
-            const actor = super.getActor(tokenId);
+        handleCreatureActionMacro(event, actor, tokenId, actionId) {
             const item = actor.items.get(actionId);
 
             if (item.system.attackstep !== 0) {
@@ -182,26 +191,26 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async takeDamage(actor) {
             let inputs = await new Promise((resolve) => {
                 new Dialog({
-                    title: this.i18n('earthdawn.t.takeDamage'),
+                    title: coreModule.api.Utils.i18n('earthdawn.t.takeDamage'),
                     content: `
           <div style="float: left">
-              <label>${this.i18n('earthdawn.d.damage')}: </label>
+              <label>${coreModule.api.Utils.i18n('earthdawn.d.damage')}: </label>
               <input id="damage_box" value=0 autofocus/>
           </div>
           <div>
-              <label>${this.i18n('earthdawn.t.type')}: </label>
+              <label>${coreModule.api.Utils.i18n('earthdawn.t.type')}: </label>
               <select id="type_box">
                 <option value="physical">Physical</option>
                 <option value="mystic">Mystic</option>
               </select>
           </div>
           <div>
-            <label>${this.i18n('earthdawn.i.ignoreArmor')}?</label>
+            <label>${coreModule.api.Utils.i18n('earthdawn.i.ignoreArmor')}?</label>
             <input type="checkbox" id="ignore_box"/>
           </div>`,
                     buttons: {
                         ok: {
-                            label: this.i18n('earthdawn.o.ok'),
+                            label: coreModule.api.Utils.i18n('earthdawn.o.ok'),
                             callback: (html) => {
                                 resolve({
                                     damage: html.find('#damage_box').val(),
@@ -217,6 +226,30 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
             inputs.ignorearmor = inputs.ignore.length > 0;
             await actor.takeDamage(inputs);
+        }
+
+        async #performUtilityAction(event, actor, token, actionId) {
+            switch (actionId) {
+                case 'endTurn':
+                    if (!token) break;
+                    if (game.combat?.current?.tokenId === token.id) {
+                        await game.combat?.nextTurn();
+                    }
+                    break;
+                case 'initiative':
+                    await this.#rollInitiative(actor);
+                    break;
+            }
+
+            // Update HUD
+            Hooks.callAll('forceUpdateTokenActionHud');
+        }
+
+        async #rollInitiative(actor) {
+            if (!actor) return;
+            await actor.rollInitiative({ createCombatants: true });
+
+            Hooks.callAll('forceUpdateTokenActionHud');
         }
     }
 })
