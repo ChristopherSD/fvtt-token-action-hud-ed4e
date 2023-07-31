@@ -314,7 +314,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             favoriteActions.sort((a,b) => a.name.localeCompare(b.name));
 
             // add actions to action list
-            this.addActions(favoriteActions, favoritesGroupData);
+            await this.addActions(favoriteActions, favoritesGroupData);
         }
 
         async #buildTalentsOrSkill(type) {
@@ -478,7 +478,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 const isEquipabble = itemEntity.system.hasOwnProperty('worn');
                 const isThreadItem = itemEntity.system.isthread;
                 const equipped = !!itemEntity.system.worn;
-                const hasQuantity = itemEntity.system?.amount > 0;
                 const itemType = itemEntity.type;
 
                 // populate Map
@@ -580,13 +579,6 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async #getAction(actionType, entity, groupData) {
             const id = entity.id ?? entity._id;
             let name = entity?.name ?? entity?.label;
-            /*if (
-                entity?.system?.recharge &&
-                !entity?.system?.recharge?.charged &&
-                entity?.system?.recharge?.value
-            ) {
-                name += ` (${coreModule.api.Utils.i18n('DND5E.Recharge')})`
-            }*/
             const actionTypeName = `${coreModule.api.Utils.i18n(ACTION_TYPE[actionType])}: ` ?? '';
             const listName = `${actionTypeName}${name}`;
             if (!listName) coreModule.api.Logger.debug("No list name for: ", {actionType, entity, groupData});
@@ -772,6 +764,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     break;
                 case 'weapon':
                     icon1 = `<i class="${WEAPON_TYPE_ICON[item.system.weapontype.toLowerCase()]}" title="${this.i18n.localize('earthdawn.w.weaponType')}"></i>`;
+                    // fallthrough for forged icon
                 case 'armor':
                     if (
                         item.system.timesForged > 0
@@ -897,7 +890,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const weaponActions = await Promise.all(
                 weapons.map(async w => await this.#getAction("weaponAttack", w, weaponAttackGroup))
             );
-            this.addActions(weaponActions, weaponAttackGroup);
+            await this.addActions(weaponActions, weaponAttackGroup);
 
             // tactics
             const tacticsProperties = [
@@ -932,7 +925,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 type: 'system'
             }
 
-            this.addActions(tacticsActions, optionsModifier);
+            await this.addActions(tacticsActions, optionsModifier);
 
             // actions
 
@@ -958,7 +951,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     encodedValue: ["jumpup", "jumpup"].join(this.delimiter),
                 },
             ];
-            this.addActions(combatActions, combatActionGroup);
+            await this.addActions(combatActions, combatActionGroup);
         }
 
         async #buildMatrices() {
@@ -1005,7 +998,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 })
 
                 await this.addGroup(matrixGroupData, matrixParentGroupData, true);
-                this.addActions(matrixActions, matrixGroupData);
+                await this.addActions(matrixActions, matrixGroupData);
             }
         }
     }
