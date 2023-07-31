@@ -48,7 +48,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         this.handleCreatureActionMacro(event, actor, token, actionId);
                         break;
                     case 'item':
-                        this.rollInventoryMacro(event, actor, token, actionId);
+                        await this.rollInventoryMacro(event, actor, token, actionId);
                         break;
                     case 'toggle':
                         await this.toggleDataProperty(event, actor, token, actionId);
@@ -84,7 +84,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         actor.rollPrep({weaponID: actionId, rolltype: 'attack'});
                         break;
                     case 'takedamage':
-                        this.takeDamage(actor);
+                        await this.takeDamage(actor);
                         break;
                     case 'knockdowntest':
                         actor.knockdownTest({});
@@ -114,15 +114,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             actor.rollPrep({ talentID: actionId});
         }
 
-        rollInventoryMacro(event, actor, tokenId, actionId) {
+        async rollInventoryMacro(event, actor, tokenId, actionId) {
             const item = actor.items.get(actionId);
-            if (item.type === 'equipment') {
-                item.sheet.render(true);
-            } else if (['weapon', 'armor', 'shield'].indexOf(item.type) >= 0) {
-                this.toggleItemWornProperty(event, actor, tokenId, actionId);
-            } else {
-                //problem
-                Logger.error(item.type, " is not a valid actionId for rolling an inventory item")
+            if (item.system.hasOwnProperty('worn')) {
+                await this.toggleItemWornProperty(event, actor, tokenId, actionId);
             }
         }
 
@@ -146,12 +141,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             Hooks.callAll('forceUpdateTokenActionHud');
         }
 
-        toggleItemWornProperty(event, actor, tokenId, actionId) {
+        async toggleItemWornProperty(event, actor, tokenId, actionId) {
             const item = actor.items.get(actionId);
             const currentValue = item.system['worn'];
             const valueType = typeof currentValue;
             let newValue = valueType === "string" ? this._toggleBooleanString(currentValue) : !currentValue;
-            item.update({
+            await item.update({
                 system: {
                     worn: newValue
                 }
