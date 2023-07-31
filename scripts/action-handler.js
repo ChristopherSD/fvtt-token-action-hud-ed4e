@@ -592,7 +592,10 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             if (!listName) coreModule.api.Logger.debug("No list name for: ", {actionType, entity, groupData});
             let cssClass = '';
             if (Object.hasOwn(entity, 'disabled')) {
-                const active = (!entity.disabled) ? ' active' : '';
+                let active = (!entity.disabled) ? ' active' : '';
+                cssClass = `toggle${active}`;
+            } else if (Object.hasOwn(entity.system ?? {}, 'worn')) {
+                let active = entity.system.worn ? ' active' : '';
                 cssClass = `toggle${active}`;
             }
             const encodedValue = [actionType, id].join(this.delimiter);
