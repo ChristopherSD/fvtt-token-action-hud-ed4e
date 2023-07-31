@@ -32,6 +32,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             if (this.isRenderItem()) {
                 if (['skill', 'talent', 'power', 'item', 'spell'].includes(actionType)) {
                     this.doRenderItem(actor, actionId);
+                } else if (actionType === 'effect') {
+                    actor.effects.get(actionId).sheet.render(true);
                 }
             } else {
                 switch (actionType) {
@@ -93,14 +95,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         actor.jumpUpTest();
                         break;
                     case 'effect':
-                        if (this.isRenderItem()) {
-                            actor.effects.get(actionId).sheet.render(true);
-                        } else {
-                            await this.#toggleEffect(event, actor, actionId);
-                        }
+                        await this.#toggleEffect(event, actor, actionId);
                         break;
                     default:
-                        if (this.isRenderItem()) this.doRenderItem(actor, actionId);
                         break;
                 }
             }
