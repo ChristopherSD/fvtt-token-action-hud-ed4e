@@ -30,7 +30,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         async #handleAction(event, actionType, actor, token, actionId) {
             if (this.isRenderItem()) {
-                if (['skill', 'talent', 'power', 'item', 'effect', 'spell'].includes(actionType)) {
+                if (['skill', 'talent', 'power', 'item', 'spell'].includes(actionType)) {
                     this.doRenderItem(actor, actionId);
                 }
             } else {
@@ -51,7 +51,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         this.rollInventoryMacro(event, actor, token, actionId);
                         break;
                     case 'toggle':
-                        this.toggleDataProperty(event, actor, token, actionId);
+                        await this.toggleDataProperty(event, actor, token, actionId);
                         break;
                     case 'attribute':
                         this.rollAttributeMacro(event, actor, token, actionId);
@@ -93,7 +93,11 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                         actor.jumpUpTest();
                         break;
                     case 'effect':
-                        if (this.isRenderItem()) actor.effects.get(actionId).sheet.render(true);
+                        if (this.isRenderItem()) {
+                            actor.effects.get(actionId).sheet.render(true);
+                        } else {
+                            await this.#toggleEffect(event, actor, actionId);
+                        }
                         break;
                     default:
                         if (this.isRenderItem()) this.doRenderItem(actor, actionId);
@@ -122,23 +126,21 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             }
         }
 
-        toggleDataProperty(event, actor, tokenId, actionId) {
+        async toggleDataProperty(event, actor, tokenId, actionId) {
             if (actionId.includes("tactics")) {
                 const tactic = actionId.split('.')[1];
                 const updateData = {system: {tactics: {}}};
                 updateData.system.tactics[tactic] = !actor.system.tactics[tactic];
-                actor.update(updateData);
+                await actor.update(updateData);
             } else {
                 const currentValue = actor.system[actionId];
                 const valueType = typeof currentValue;
                 const newValue = valueType === "string" ? this._toggleBooleanString(currentValue) : !currentValue;
-                const updateData = {system: {}};
-                updateData.system[actionId] = newValue;
-                actor.update(updateData);
-                console.debug("Current Value: ", currentValue)
-                console.debug("Value Type: ", valueType)
-                console.debug("New Value: ", newValue)
-                console.debug("Actor system data: ", actor.system[actionId])
+                await actor.update({
+                    system: {
+                        [actionId]: newValue
+                    }
+                })
             }
             // Update HUD
             Hooks.callAll('forceUpdateTokenActionHud');
@@ -248,6 +250,17 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async #rollInitiative(actor) {
             if (!actor) return;
             await actor.rollInitiative({ createCombatants: true });
+
+            Hooks.callAll('forceUpdateTokenActionHud');
+        }
+
+        async #toggleEffect(event, actor, actionId) {
+            const effects = 'find' in actor.effects.entries ? actor.effects.entries : actor.effects;
+            const effect = effects.find(effect => effect.id === actionId);
+
+            if (!effect) return;
+
+            await effect.update({ disabled: !effect.disabled});
 
             Hooks.callAll('forceUpdateTokenActionHud');
         }
