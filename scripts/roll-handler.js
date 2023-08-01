@@ -30,7 +30,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
         async #handleAction(event, actionType, actor, token, actionId) {
             if (this.isRenderItem()) {
-                if (['skill', 'talent', 'power', 'item', 'spell'].includes(actionType)) {
+                if (['skill', 'talent', 'power', 'item', 'spell', 'weaponAttack'].includes(actionType)) {
                     this.doRenderItem(actor, actionId);
                 } else if (actionType === 'effect') {
                     actor.effects.get(actionId).sheet.render(true);
