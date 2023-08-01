@@ -365,6 +365,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 nestId: [groupId, groupId].join('_'),
                 type: 'system'
             }
+
+            // TODO: build knacks
+
             await this.#buildActions(itemsMap, groupData, type);
         }
 
