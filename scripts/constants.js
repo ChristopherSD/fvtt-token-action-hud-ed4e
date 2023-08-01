@@ -203,3 +203,14 @@ export const GROUP = {
     ...circleGroupData,
     ...disciplineGroupData,
 }
+
+/**
+ * Rarity
+ */
+export const RARITY = {
+    Everyday: 'earthdawn.a.availabilityEveryday',
+    Average: 'earthdawn.a.availabilityAverage',
+    Unusual: 'earthdawn.a.availabilityUnusual',
+    Rare: 'earthdawn.a.availabilityRare',
+    VeryRare: 'earthdawn.a.availabilityVeryRare'
+}

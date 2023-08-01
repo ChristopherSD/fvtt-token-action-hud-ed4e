@@ -118,6 +118,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 this.#buildFavorites(),
                 this.#buildTalentsOrSkill('talent'),
                 this.#buildTalentsOrSkill('skill'),
+                // TODO: build Devotion Powers
                 this.#buildSpells(),
                 this.#buildMatrices(),
                 this.#buildInventory(),
@@ -600,8 +601,8 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             const info1 = info?.info1;
             const info2 = info?.info2;
             const info3 = info?.info3;
-            //const tooltipData = await this.#getTooltipData(entity)
-            //const tooltip = await this.#getTooltip(tooltipData)
+            const tooltipData = await this.#getTooltipData(entity);
+            const tooltip = await this.#getTooltip(tooltipData);
             return {
                 id,
                 name,
@@ -615,7 +616,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 info2,
                 info3,
                 listName,
-                //tooltip
+                tooltip
             }
         }
 
@@ -823,9 +824,59 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             map.get(mainKey).set(subKey, subValue);
         }
 
-        #getTooltipData(entity) {}
+        #getTooltipData(entity) {
+            if (this.tooltipsSetting === 'none') return '';
 
-        #getTooltip(tooltipData) {}
+            const name = entity?.name ?? '';
+
+            if (this.tooltipsSetting === 'none') return '';
+
+            const description = (typeof entity?.system?.description === 'string')
+                ? entity?.system?.description
+                : entity?.system?.description?.value ?? '';
+
+            const rarity = entity?.availability ?? null;
+
+            const properties = this.#getProperties(entity);
+
+            const tags = this.#getTags(entity);
+
+            return { name, description, properties, rarity, tags };
+        }
+
+        async #getTooltip(tooltipData) {
+            if (this.tooltipsSetting === 'none') return '';
+            if (typeof tooltipData === 'string') return tooltipData;
+
+            const name = tooltipData.name;
+
+            const nameHtml = `<h3>${name}</h3>`;
+
+            const description = tooltipData?.descriptionLocalized ??
+                await TextEditor.enrichHTML(this.i18n.localize(tooltipData?.description ?? ''), { async: true});
+
+            const rarityHtml = tooltipData?.rarity
+                ? `<span class="tah-tag ${tooltipData.rarity}">${coreModule.api.Utils.i18n(RARITY[tooltipData.rarity])}</span>`
+                : '';
+
+            const propertiesHtml = tooltipData?.properties
+                ? `<div class="tah-properties">${tooltipData.properties.map(property => `<span class="tah-property">${coreModule.api.Utils.i18n(property)}</span>`).join('')}</div>`
+                : '';
+
+            const tagDescriptionHtml = tooltipData?.tags
+                ? tooltipData.tags.map(tag => `<span class="tah-tag">${coreModule.api.Utils.i18n(tag.label ?? tag)}</span>`).join('')
+                : '';
+
+            const tagsJoined = [rarityHtml, tagDescriptionHtml].join('');
+
+            const tagsHtml = (tagsJoined) ? `<div class="tah-tags">${tagsJoined}</div>` : '';
+
+            const headerTags = (tagsHtml) ? `<div class="tah-tags-wrapper">${tagsHtml}</div>` : '';
+
+            if (!description && !tagsHtml) return name;
+
+            return `<div>${nameHtml}${headerTags}${description}${propertiesHtml}</div>`;
+        }
 
         #buildUtility() {
             const actionType = 'utility';
@@ -1000,6 +1051,118 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 await this.addGroup(matrixGroupData, matrixParentGroupData, true);
                 await this.addActions(matrixActions, matrixGroupData);
             }
+        }
+
+        #getProperties(entity) {
+            let properties = [];
+            switch (entity.type ?? 'effect') {
+                case 'armor':
+                    properties.push(
+                        `${entity.system.Aphysicalarmor} + ${entity.system.timesForgedPhysical} ${this.i18n.localize('tokenActionHud.ed4e.abbreviations.physicalArmor')}`,
+                        `${entity.system.Amysticarmor} + ${entity.system.timesForgedMystic} ${this.i18n.localize('tokenActionHud.ed4e.abbreviations.mysticArmor')}`,
+                        this.#getIniPenaltyPropertyString(entity.system.armorPenalty),
+                    );
+                    break;
+                case 'attack':
+                    properties.push(
+                        `${this.i18n.localize('earthdawn.a.actionStep')} ${entity.system.attackstep}`,
+                        `${this.i18n.localize('earthdawn.d.damageStep')} ${entity.system.damagestep}`,
+                    );
+                    break;
+                case 'devotion':
+                    properties.push(
+                        `${this.#getActionPropertyString(entity.system.action.toLowerCase())}`,
+                        `${this.#getAttributePropertyString(entity.system.attribute)}`,
+                        `${this.#getStrainPropertyString(strain)}`,
+                        `${entity.system.devotionRequired ? this.i18n.localize('earthdawn.d.devotion') : ''}`
+                    );
+                    break;
+                case 'knack':
+                    properties.push(
+                        this.#getActionPropertyString(entity.system.action),
+                        this.#getAttributePropertyString(entity.system.attribute),
+                        this.#getStrainPropertyString(entity.system.strain),
+                    );
+                    break;
+                case 'shield':
+                    properties.push(
+                        `${entity.system.physicaldefense} ${this.i18n.localize('tokenActionHud.ed4e.abbreviations.physicalDefense')}`,
+                        `${entity.system.mysticdefense} ${this.i18n.localize('tokenActionHud.ed4e.abbreviations.mysticDefense')}`,
+                        this.#getIniPenaltyPropertyString(entity.system.initiativepenalty),
+                        entity.system.shatterthreshold ? `${entity.system.shatterthreshold} ${this.i18n.localize('tokenActionHud.ed4e.shatter')}` : ``
+                    );
+                    break;
+                case 'skill':
+                case 'talent':
+                    properties.push(
+                        this.#getActionPropertyString(entity.system.action),
+                        this.#getAttributePropertyString(entity.system.attribute),
+                        this.#getStrainPropertyString(entity.system.strain)
+                    );
+                    break;
+                case 'spell':
+                    properties.push(
+                        entity.system.circle
+                            ? `${this.i18n.localize('earthdawn.c.circle')} ${entity.system.circle}`
+                            : '',
+                        `${this.i18n.localize('tokenActionHud.ed4e.threads')} ${entity.system.threadsrequired}`,
+                        `${this.i18n.localize('tokenActionHud.ed4e.weaving')} ${entity.system.weavingdifficulty}/${entity.system.reattunedifficulty}`,
+                        `${this.i18n.localize('tokenActionHud.ed4e.casting')} ${entity.system.castingdifficulty}`,
+                    );
+                    break;
+                case 'weapon':
+                    const weaponType = entity.system.weapontype.toLowerCase();
+                    properties.push(
+                        `${this.i18n.localize(`earthdawn.${weaponType[0]}.${weaponType}`)}`,
+                        `${entity.system.damagestep} + ${this.#getAttributePropertyString(entity.system.damageattribute)} = ${entity.system.damageTotal}`,
+                        entity.system.timesForged ? `+${entity.system.timesForged}` : '',
+                        entity.system.longrange ? `${this.i18n.localize('earthdawn.r.range')} ${entity.system.shortrange}/${entity.system.longrange}` : ''
+                    );
+                    break;
+            }
+            return properties.filter(e => String(e).trim()); // to clear out empty strings
+        }
+
+        #getActionPropertyString(actionType) {
+            const actionTypeLowerCase = actionType?.toLowerCase();
+            return actionTypeLowerCase
+                ? `${this.i18n.localize('earthdawn.a.action')}: ${this.i18n.localize(`earthdawn.${actionTypeLowerCase[0]}.${actionTypeLowerCase}`)}`
+                : '';
+        }
+
+        #getAttributePropertyString(attribute) {
+            return attribute
+                ? `${this.i18n.localize(ATTRIBUTES_ABBREVIATED[attribute.replace('Step', '')])}`
+                : '';
+        }
+
+        #getStrainPropertyString(strain) {
+            return strain
+                ? `${strain} ${this.i18n.localize('earthdawn.s.strain')}`
+                : '';
+        }
+
+        #getIniPenaltyPropertyString(penalty) {
+            return penalty
+                ? `-${penalty} ${this.i18n.localize('earthdawn.i.INI')}`
+                : '';
+        }
+
+        #getTags(entity) {
+            const tags = [];
+            switch (entity.type ?? 'effect') {
+                case 'knack':
+                    tags.push(
+                        entity.system.sourceTalentName ?? '',
+                    );
+                    break;
+                case 'spell':
+                    tags.push(
+                        entity.system.discipline ?? '',
+                    );
+                    break;
+            }
+            return tags;
         }
     }
 })

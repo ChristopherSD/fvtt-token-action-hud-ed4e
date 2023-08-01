@@ -8,6 +8,7 @@
         "mysticDefense": "MD"
       },
       "attack": "Attack",
+      "casting": "Casting",
       "disciplines": {
 
       },
@@ -36,6 +37,7 @@
           "name": "Show ammo for weapons"
         }
       },
+      "shatter": "Shatter",
       "system": "System",
       "threads": "Threads",
       "tooltips": {
@@ -50,7 +52,8 @@
         "recoveryTest": "Roll a recovery test."
       },
       "unequipped": "Unequipped",
-      "utility": "Utility"
+      "utility": "Utility",
+      "weaving": "Weaving"
     }
   }
 }
