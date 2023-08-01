@@ -116,9 +116,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async #buildCharacterActions() {
             await Promise.all([
                 this.#buildFavorites(),
-                this.#buildTalentsOrSkill('talent'),
-                this.#buildTalentsOrSkill('skill'),
-                // TODO: build Devotion Powers
+                this.#buildTalentsSkillsDevotions('talent'),
+                this.#buildTalentsSkillsDevotions('skill'),
+                this.#buildTalentsSkillsDevotions('devotion'),
                 this.#buildSpells(),
                 this.#buildMatrices(),
                 this.#buildInventory(),
@@ -318,22 +318,20 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             await this.addActions(favoriteActions, favoritesGroupData);
         }
 
-        async #buildTalentsOrSkill(type) {
+        async #buildTalentsSkillsDevotions(type) {
             // Get talent or skill items
-            const talentsSkills = new Map();
+            const itemsMap = new Map();
             for (const [key, value] of this.items) {
                 const itemType = value.type;
-                if (itemType === type) talentsSkills.set(key, value);
+                if (itemType === type) itemsMap.set(key, value);
             }
 
             // Early exit if no items exist
-            if (talentsSkills.size === 0) return;
-
-            coreModule.api.Logger.debug(`Building group "${type}s"`);
+            if (itemsMap.size === 0) return;
 
             // Map talents/skill by action type to new maps
             const actionTypeMap = new Map();
-            for (const [key, value] of talentsSkills) {
+            for (const [key, value] of itemsMap) {
                 const actionType = value.system.action?.toLowerCase() ?? 'na';
                 if (!actionTypeMap.has(actionType)) actionTypeMap.set(actionType, new Map());
                 actionTypeMap.get(actionType).set(key, value);
@@ -367,7 +365,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 nestId: [groupId, groupId].join('_'),
                 type: 'system'
             }
-            await this.#buildActions(talentsSkills, groupData, type);
+            await this.#buildActions(itemsMap, groupData, type);
         }
 
         async #buildSpells() {
@@ -630,6 +628,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         #getItemInfo(item, groupData) {
             let info1, info2, info3;
             switch (item.type) {
+                case 'devotion':
                 case 'talent':
                 case 'skill':
                     info1 = {
@@ -756,11 +755,18 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             let icon1, icon2, icon3;
 
             switch (item.type) {
+                case 'devotion':
+                    if (item.system.devotionRequired === true
+                        || ['yes', 'true'].includes(item.system.devotionRequired?.toLowerCase())
+                    ) {
+                        icon1 = `<i class="fa-light fa-person-praying" title="${this.i18n.localize('earthdawn.d.devotionRequired')}"></i>`;
+                    }
+                    // fall through
                 case 'talent':
                 case 'skill':
                 case 'attack':
                     if (item.system.strain > 0) {
-                        icon1 = `<i class="fa-thin fa-droplet" title="${this.i18n.localize('earthdawn.s.strain')}"></i>`;
+                        icon2 = `<i class="fa-thin fa-droplet" title="${this.i18n.localize('earthdawn.s.strain')}"></i>`;
                     }
                     break;
                 case 'weapon':
@@ -1073,7 +1079,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     properties.push(
                         `${this.#getActionPropertyString(entity.system.action.toLowerCase())}`,
                         `${this.#getAttributePropertyString(entity.system.attribute)}`,
-                        `${this.#getStrainPropertyString(strain)}`,
+                        `${this.#getStrainPropertyString(entity.system.strain)}`,
                         `${entity.system.devotionRequired ? this.i18n.localize('earthdawn.d.devotion') : ''}`
                     );
                     break;

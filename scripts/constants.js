@@ -187,6 +187,7 @@ export const GROUP = {
     combatActions: { id: 'combatActions', name: 'earthdawn.a.actions', type: 'system'},
     talents: { id: 'talents', name: 'earthdawn.t.talents', type: 'system'},
     skills: { id: 'skills', name: 'earthdawn.s.skills', type: 'system'},
+    devotions: { id: 'devotions', name: 'earthdawn.d.devotions', type: 'system'},
     standard: { id: 'standard', name: 'earthdawn.s.standard', type: 'system'},
     simple: { id: 'simple', name: 'earthdawn.s.sustained', type: 'system'},
     free: { id: 'free', name: 'earthdawn.f.free', type: 'system'},

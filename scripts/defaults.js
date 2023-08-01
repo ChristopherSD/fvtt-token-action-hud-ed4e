@@ -68,6 +68,18 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 ]
             },
             {
+                nestId: 'devotions',
+                id: 'devotions',
+                name: coreModule.api.Utils.i18n('earthdawn.d.devotions'),
+                groups: [
+                    {...groups.standard, nestId: 'devotions_standard'},
+                    {...groups.simple, nestId: 'devotions_simple'},
+                    {...groups.free, nestId: 'devotions_free'},
+                    {...groups.sustained, nestId: 'devotions_sustained'},
+                    {...groups.na, nestId: 'devotions_na'},
+                ]
+            },
+            {
                 nestId: 'spells',
                 id: 'spells',
                 name: coreModule.api.Utils.i18n('earthdawn.s.spells'),
