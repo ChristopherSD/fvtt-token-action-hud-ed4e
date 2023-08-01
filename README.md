@@ -2,7 +2,6 @@
 
 Token Action HUD is a repositionable HUD of actions for a selected token.
 
-![Token Action HUD](.github/readme/token-action-hud.gif)
 
 # Features
 - Make rolls directly from the HUD instead of opening your character sheet.
