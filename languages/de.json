@@ -1,0 +1,59 @@
+{
+  "tokenActionHud": {
+    "ed4e": {
+      "abbreviations": {
+        "physicalArmor": "PR",
+        "physicalDefense": "PV",
+        "mysticArmor": "MR",
+        "mysticDefense": "MV"
+      },
+      "attack": "Angriff",
+      "casting": "Wirken",
+      "disciplines": {
+
+      },
+      "forged": "Geschmiedet",
+      "groupTitles": {
+        "attributes": "Attribute",
+        "favorites": "Favoriten",
+        "general": "Allgemein",
+        "matrix": "Matrix"
+      },
+      "infoTitles": {
+        "attributeStep": "Attributsstufe",
+        "recoveryTests": "Erholungsprobe (verfügbar/max)"
+      },
+      "item": "Gegenstand",
+      "na": "N/A",
+      "options": "Optionen",
+      "rollInitiative": "Würfle Initiative",
+      "settings": {
+        "abbreviateAttributes": {
+          "hint": "Attributsnamen abgekürzt mit drei Buchstaben anzeigen",
+          "name": "Attributsnamen abkürzen"
+        },
+        "showWeaponAmmoInfo": {
+          "hint": "Anzahl an Munition für Fernkampfwaffen anzeigen (falls getracked)",
+          "name": "Munition für Fernkampfwaffen anzeigen"
+        }
+      },
+      "shatter": "Bruchschwelle",
+      "system": "System",
+      "threads": "Fäden",
+      "tooltips": {
+        "attributeTest": "Würfle einen {attribute}-Test.",
+        "info": {
+          "matrixSpell": "Abgestimmter Zauber",
+          "matrixThreads": "Fäden Aktiv/Benötigt",
+          "weaponAmmo": "Verfügbare Munition",
+          "weaponRange": "Reichweite (kurz/lang)",
+          "weaponStepTotal": "Schadensstufe gesamt<br>(Waffe + Geschmiedet + Attribut)"
+        },
+        "recoveryTest": "Würfle einen Erholungstest."
+      },
+      "unequipped": "Nicht ausgerüstet",
+      "utility": "Nützliches",
+      "weaving": "Weben"
+    }
+  }
+}
