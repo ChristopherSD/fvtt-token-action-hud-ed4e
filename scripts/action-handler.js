@@ -1065,7 +1065,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     break;
                 case 'attack':
                     properties.push(
-                        `${this.i18n.localize('earthdawn.a.actionStep')} ${entity.system.attackstep}`,
+                        `${this.i18n.localize('earthdawn.a.aktionStep')} ${entity.system.attackstep}`,
                         `${this.i18n.localize('earthdawn.d.damageStep')} ${entity.system.damagestep}`,
                     );
                     break;
