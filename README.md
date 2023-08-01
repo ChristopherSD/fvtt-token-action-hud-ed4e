@@ -1,2 +1,53 @@
-# fvtt-token-action-hud-ed4e
-Earthdawn implementation of the Token Action HUD for Foundry VTT.
+# Token Action HUD Earthdawn
+
+Token Action HUD is a repositionable HUD of actions for a selected token.
+
+![Token Action HUD](.github/readme/token-action-hud.gif)
+
+# Features
+- Make rolls directly from the HUD instead of opening your character sheet.
+- Use items from the HUD or right-click an item to open its sheet.
+- Move the HUD and choose to expand the menus up or down.
+- Unlock the HUD to customise groups and actions.
+- Add your own macros and Journal Entry and Roll Table compendiums.
+
+# Installation
+
+## Method 1
+1. On Foundry VTT's **Configuration and Setup** screen, go to **Add-on Modules**
+2. Click **Install Module**
+3. Search for **Token Action HUD Earthdawn** 
+4. Click **Install** next to the module listing
+
+## Method 2
+1. On Foundry VTT's **Configuration and Setup** screen, go to **Add-on Modules**
+2. Click **Install Module**
+3. In the Manifest URL field, paste: `https://github.com/ChristopherSD/fvtt-token-action-hud-ed4e/releases/latest/download/module.json`
+4. Click **Install** next to the pasted Manifest URL
+
+# Required Modules
+
+## Token Action HUD Core
+Token Action HUD D&D 5e requires the [Token Action HUD D&D Core](https://foundryvtt.com/packages/token-action-hud-core) module.
+
+## socketlib
+Token Action HUD Core requires the [socketlib](https://foundryvtt.com/packages/socketlib) library module.
+
+# Recommended Modules
+Token Action HUD uses the [Color Picker](https://foundryvtt.com/packages/color-picker) library module for its color picker settings.
+
+# Support
+
+For a guide on using Token Action HUD, go to: [How to Use Token Action HUD](https://github.com/Larkinabout/fvtt-token-action-hud-core/wiki/How-to-Use-Token-Action-HUD)
+
+For questions, feature requests or bug reports, concerning the Earthdawn implementation of the TAH, please open an issue [here](https://github.com/ChristopherSD/fvtt-token-action-hud-ed4e/issues), for problems with the main module, [here](https://github.com/Larkinabout/fvtt-token-action-hud-core/issues).
+
+Pull requests are welcome. Please include a reason for the request or create an issue before starting one.
+
+# Acknowledgements
+
+A huge Thank you to [Larkinabout](https://github.com/Larkinabout/) who created and maintains this version of the Token Action HUD module, as well as the DND 5E module, on which this is heavily based. Thank you to the Community Helpers on Foundry's Discord who provide tireless support for people seeking help with the HUD.
+
+# License
+
+This Foundry VTT module is licensed under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/) and this work is licensed under [Foundry Virtual Tabletop EULA - Limited License Agreement for module development](https://foundryvtt.com/article/license/).
