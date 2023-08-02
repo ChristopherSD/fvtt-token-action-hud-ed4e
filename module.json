@@ -18,8 +18,6 @@
   "esmodules": [
     "./scripts/token-action-hud-ed4e.min.js"
   ],
-  "scripts": [
-  ],
   "styles": [
     "./styles/tah-ed4e.css"
   ],
@@ -28,9 +26,13 @@
       "lang": "en",
       "name": "English",
       "path": "languages/en.json"
+    },
+    {
+      "lang": "de",
+      "name": "Deutsch",
+      "path": "languages/de.json"
     }
   ],
-  "packs": [],
   "relationships": {
     "systems": [
       {
@@ -62,11 +64,7 @@
       "optional": []
     }
   },
-  "socket": false,
   "manifest": "This is auto replaced",
   "download": "This is auto replaced",
   "readme": "https://github.com/ChristopherSD/fvtt-token-action-hud-ed4e#readme",
-  "protected": false,
-  "coreTranslation": false,
-  "library": false
 }
