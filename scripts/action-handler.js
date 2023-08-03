@@ -1050,7 +1050,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
 
                 const matrixActions = Array.from(Object.entries(actionNameMapping), ([key, value]) => {
                     return {
-                        id: matrix.id,
+                        id: `${key}_${matrix.id}`,
                         name: this.i18n.localize(value),
                         encodedValue: [key, matrix.id].join(this.delimiter),
                         selected: true
