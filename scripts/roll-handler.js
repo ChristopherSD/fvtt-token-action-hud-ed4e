@@ -162,25 +162,22 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         handleCreatureActionMacro(event, actor, tokenId, actionId) {
             const item = actor.items.get(actionId);
 
-            if (item.system.attackstep !== 0) {
-                const modifier = 0;
-                const strain = item.system.strain ? item.system.strain : 0;
-                const karma = 0;
+            const modifier = 0;
+            const strain = item.system.strain ? item.system.strain : 0;
+            const karma = 0;
 
-                let type = (item.system.powerType === "Attack") ? "attack" : (item.system.attackstep > 0) ? "test" : "";
-                const parameters = {
-                    itemID: actionId,
-                    steps: item.system.attackstep,
-                    talent: item.name,
-                    strain: strain,
-                    type: type,
-                    karma: karma,
-                    modifier: modifier,
-                };
-                actor.NPCtest(parameters);
-            } else {
-                actor.items.get(actionId).sheet.render(true);
-            }
+            let type = (item.system.powerType === "Attack") ? "attack" : (item.system.attackstep > 0) ? "test" : "";
+            const parameters = {
+                itemID: actionId,
+                weaponID: actionId,
+                steps: item.system.attackstep,
+                talent: item.name,
+                strain: strain,
+                type: type,
+                karma: karma,
+                modifier: modifier,
+            };
+            actor.NPCtest(parameters);
         }
 
         async takeDamage(actor) {
