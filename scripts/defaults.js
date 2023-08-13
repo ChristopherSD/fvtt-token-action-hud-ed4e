@@ -12,6 +12,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         group.listName = `Group: ${coreModule.api.Utils.i18n(group.name)}`;
     })
     const groupsArray = Object.values(groups);
+    console.debug('Creating default cats and groups. groupsArray:', groupsArray);
     DEFAULTS = {
         layout: [
             {
@@ -122,6 +123,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 id: 'effects',
                 name: coreModule.api.Utils.i18n('earthdawn.e.effects'),
                 groups: [
+                    { ...groups.addEffect, nestId: 'effects_addEffect'},
                     { ...groups.effects, nestId: 'effects_effects' }
                 ]
             },

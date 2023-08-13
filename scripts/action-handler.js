@@ -543,7 +543,18 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                 effectMap.set(effectId, effect);
             }
 
-            await this.#buildActions(effectMap, { id: 'effects', nestId: 'effects_effects', type: 'system'}, actionType);
+            await Promise.all([
+                this.addActions(
+                    [{
+                        id: 'addEffect',
+                        name: this.i18n.localize('tokenActionHud.ed4e.newEffect'),
+                        encodedValue: ['addEffect', 'addEffect'].join(this.delimiter),
+                        icon: `<i class="fa-solid fa-plus" title="${this.i18n.localize('tokenActionHud.ed4e.newEffect')}"></i>`
+                    }],
+                    { id: 'addEffect', nestId: 'effects_addEffect', type: 'system' }
+                ),
+                this.#buildActions(effectMap, { id: 'effects', nestId: 'effects_effects', type: 'system'}, actionType)
+            ])
         }
 
         /**
@@ -764,7 +775,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     ) {
                         icon1 = `<i class="fa-light fa-person-praying" title="${this.i18n.localize('earthdawn.d.devotionRequired')}"></i>`;
                     }
-                    // fall through
+                // fall through
                 case 'talent':
                 case 'skill':
                 case 'attack':
@@ -774,7 +785,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     break;
                 case 'weapon':
                     icon1 = `<i class="${WEAPON_TYPE_ICON[item.system.weapontype.toLowerCase()]}" title="${this.i18n.localize('earthdawn.w.weaponType')}"></i>`;
-                    // fallthrough for forged icon
+                // fallthrough for forged icon
                 case 'armor':
                     if (
                         item.system.timesForged > 0

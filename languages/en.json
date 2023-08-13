@@ -14,6 +14,7 @@
       },
       "forged": "Forged",
       "groupTitles": {
+        "addEffect": "Add Effect",
         "attributes": "Attributes",
         "favorites": "Favorites",
         "general": "General",
@@ -25,6 +26,7 @@
       },
       "item": "Item",
       "na": "N/A",
+      "newEffect": "Add New Effect",
       "options": "Options",
       "rollInitiative": "Roll Initiative",
       "settings": {

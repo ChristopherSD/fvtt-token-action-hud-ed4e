@@ -201,6 +201,7 @@ export const GROUP = {
     powerManeuvers: { id: 'powerManeuvers', name: 'earthdawn.m.maneuvers', type: 'system' },
     powerPowers: { id: 'powerPowers', name: 'earthdawn.p.powers', type: 'system' },
     effects: { id: 'effects', name: 'earthdawn.e.effects', type: 'system' },
+    addEffect: { id: 'addEffect', name: 'tokenActionHud.ed4e.groupTitles.addEffect', type: 'system' },
     ...circleGroupData,
     ...disciplineGroupData,
 }

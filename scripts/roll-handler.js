@@ -95,6 +95,9 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
                     case 'jumpup':
                         actor.jumpUpTest();
                         break;
+                    case 'addEffect':
+                        await this.#createEffect(event, actor);
+                        break;
                     case 'effect':
                         await this.#toggleEffect(event, actor, actionId);
                         break;
@@ -253,6 +256,19 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
             await effect.update({ disabled: !effect.disabled});
 
             Hooks.callAll('forceUpdateTokenActionHud');
+        }
+
+        async #createEffect(event, actor) {
+            const itemNumber = actor.effects.size;
+            const itemData = {
+                label: `New Effect ` + itemNumber,
+                icon: 'systems/earthdawn4e/assets/effect.png',
+                duration: { rounds: 1 },
+                origin: actor.id,
+            };
+
+            const newEffects = await actor.createEmbeddedDocuments('ActiveEffect', [itemData]);
+            newEffects[0].sheet.render(true);
         }
     }
 })
