@@ -8,7 +8,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
          * @param {object} event
          * @param {string} encodedValue
          */
-        async doHandleActionEvent(event, encodedValue) {
+        async handleActionClick(event, encodedValue) {
             let payload = encodedValue.split(this.delimiter);
 
             if (payload.length !== 2) {
@@ -31,7 +31,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
         async #handleAction(event, actionType, actor, token, actionId) {
             if (this.isRenderItem()) {
                 if (['skill', 'talent', 'devotion', 'power', 'item', 'spell', 'weaponAttack'].includes(actionType)) {
-                    this.doRenderItem(actor, actionId);
+                    this.renderItem(actor, actionId);
                 } else if (actionType === 'effect') {
                     actor.effects.get(actionId).sheet.render(true);
                 }

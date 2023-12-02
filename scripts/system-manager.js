@@ -14,7 +14,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) =>{
         }
 
         /** @override */
-        doGetActionHandler (categoryManager) {
+        getActionHandler (categoryManager) {
             const actionHandler = new ActionHandler(categoryManager);
             return actionHandler;
         }
@@ -29,7 +29,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) =>{
         }
 
         /** @override */
-        doGetRollHandler (handlerId) {
+        getRollHandler (handlerId) {
             let rollHandler;
             switch (handlerId) {
                 case 'core':
@@ -42,12 +42,12 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) =>{
         }
 
         /** @override */
-        doRegisterSettings (updateFunc) {
+        registerSettings (updateFunc) {
             systemSettings.register(updateFunc);
         }
 
         /** @override */
-        async doRegisterDefaultFlags () {
+        async registerDefaults () {
             const defaults = DEFAULTS;
             return defaults;
         }
