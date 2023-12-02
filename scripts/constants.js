@@ -189,7 +189,7 @@ export const GROUP = {
     skills: { id: 'skills', name: 'earthdawn.s.skills', type: 'system'},
     devotions: { id: 'devotions', name: 'earthdawn.d.devotions', type: 'system'},
     standard: { id: 'standard', name: 'earthdawn.s.standard', type: 'system'},
-    simple: { id: 'simple', name: 'earthdawn.s.sustained', type: 'system'},
+    simple: { id: 'simple', name: 'earthdawn.s.simple', type: 'system'},
     free: { id: 'free', name: 'earthdawn.f.free', type: 'system'},
     sustained: { id: 'sustained', name: 'earthdawn.s.sustained', type: 'system'},
     na: { id: 'na', name: 'tokenActionHud.ed4e.na', type: 'system'},
