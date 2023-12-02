@@ -8,10 +8,6 @@ export let SystemManager = null;
 
 Hooks.once('tokenActionHudCoreApiReady', async (coreModule) =>{
     SystemManager = class SystemManager extends coreModule.api.SystemManager {
-        /** @override */
-        doGetCategoryManager (user) {
-            return new coreModule.api.CategoryManager();
-        }
 
         /** @override */
         getActionHandler (categoryManager) {
