@@ -1,8 +1,8 @@
 // System Module Imports
-import { ActionHandler } from "./action-handler.js";
-import { RollHandler as Core } from './roll-handler.js';
+import {ActionHandler} from "./action-handler.js";
+import {RollHandler as Core} from './roll-handler.js';
 import * as systemSettings from './settings.js'
-import { DEFAULTS } from './defaults.js';
+import {DEFAULTS} from './defaults.js';
 
 export let SystemManager = null;
 
@@ -11,17 +11,15 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) =>{
 
         /** @override */
         getActionHandler (categoryManager) {
-            const actionHandler = new ActionHandler(categoryManager);
-            return actionHandler;
+            return new ActionHandler(categoryManager);
         }
 
         /** @override */
         getAvailableRollHandlers () {
             const coreTitle = 'Core Earthdawn 4th Edition';
-            const choices = {
+            return {
                 core: coreTitle
             };
-            return choices;
         }
 
         /** @override */
@@ -44,8 +42,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) =>{
 
         /** @override */
         async registerDefaults () {
-            const defaults = DEFAULTS;
-            return defaults;
+            return DEFAULTS;
         }
     }
 })
