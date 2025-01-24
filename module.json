@@ -12,8 +12,8 @@
   "flags": {},
   "version": "This is auto replaced",
   "compatibility": {
-    "minimum": "11",
-    "verified": "11.306"
+    "minimum": "12",
+    "verified": "12.331"
   },
   "esmodules": [
     "./scripts/token-action-hud-ed4e.min.js"
@@ -52,9 +52,8 @@
         "type": "module",
         "compatibility": [
           {
-            "minimum": "1.5",
-            "maximum": "1.5",
-            "verified": "1.5"
+            "minimum": "2",
+            "verified": "2.0.11"
           }
         ]
       }
