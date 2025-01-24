@@ -1,5 +1,5 @@
 // System Module Imports
-import { Utils } from "./utils.js";
+import { Utils } from "./utils.mjs";
 import {
     ACTION_TYPE,
     ATTRIBUTES,
@@ -7,7 +7,7 @@ import {
     ATTRIBUTES_FULL_NAME,
     MAX_SPELL_CIRCLE, SPELLCASTING_DISCIPLINES,
     WEAPON_TYPE_ICON
-} from "./constants.js";
+} from "./constants.mjs";
 
 
 export let ActionHandler = null;

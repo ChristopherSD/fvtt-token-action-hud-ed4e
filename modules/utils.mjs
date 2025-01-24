@@ -1,4 +1,4 @@
-import { MODULE } from "./constants.js";
+import { MODULE } from "./constants.mjs";
 
 export let Utils = null;
 

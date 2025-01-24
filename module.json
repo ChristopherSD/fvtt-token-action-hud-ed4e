@@ -16,7 +16,7 @@
     "verified": "12.331"
   },
   "esmodules": [
-    "./scripts/token-action-hud-ed4e.min.js"
+    "./modules/token-action-hud-ed4e.mjs"
   ],
   "styles": [
     "./styles/tah-ed4e.css"

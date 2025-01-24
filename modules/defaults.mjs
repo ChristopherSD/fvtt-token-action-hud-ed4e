@@ -1,9 +1,9 @@
-import {circleGroupData, GROUP} from "./constants.js";
+import {circleGroupData, GROUP} from "./constants.mjs";
 
 /**
  * Default categories and groups
  */
-export let DEFAULTS = null;
+export let Defaults = null;
 
 Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
     const groups = GROUP;
@@ -13,7 +13,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) => {
     })
     const groupsArray = Object.values(groups);
     console.debug('Creating default cats and groups. groupsArray:', groupsArray);
-    DEFAULTS = {
+    Defaults = {
         layout: [
             {
                 nestId: 'general',
