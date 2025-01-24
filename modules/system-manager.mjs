@@ -1,8 +1,8 @@
 // System Module Imports
-import {ActionHandler} from "./action-handler.js";
-import {RollHandler as Core} from './roll-handler.js';
-import * as systemSettings from './settings.js'
-import {DEFAULTS} from './defaults.js';
+import {ActionHandler} from "./action-handler.mjs";
+import {RollHandler as Core} from './roll-handler.mjs';
+import * as systemSettings from './settings.mjs'
+import {Defaults} from './defaults.mjs';
 
 export let SystemManager = null;
 
@@ -42,7 +42,7 @@ Hooks.once('tokenActionHudCoreApiReady', async (coreModule) =>{
 
         /** @override */
         async registerDefaults () {
-            return DEFAULTS;
+            return Defaults;
         }
     }
 })

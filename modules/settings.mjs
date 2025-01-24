@@ -1,4 +1,4 @@
-import { MODULE } from "./constants.js";
+import { MODULE } from "./constants.mjs";
 
 export function register(updateFunc) {
     game.settings.register(MODULE.ID, 'abbreviateAttributes', {
