@@ -15,14 +15,7 @@
     "verified": "13.346"
   },
   "esmodules": [
-    "scripts/action-handler.mjs",
-    "scripts/constants.mjs",
-    "scripts/defaults.mjs",
-    "scripts/init.mjs",
-    "scripts/roll-handler.mjs",
-    "scripts/settings.mjs",
-    "scripts/system-manager.mjs",
-    "scripts/utils.mjs"
+    "modules/init.mjs"
   ],
   "styles": [
     {
