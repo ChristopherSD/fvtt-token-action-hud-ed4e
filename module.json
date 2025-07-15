@@ -9,17 +9,25 @@
     }
   ],
   "url": "This is auto replaced",
-  "flags": {},
   "version": "This is auto replaced",
   "compatibility": {
-    "minimum": "12",
-    "verified": "12.331"
+    "minimum": "11",
+    "verified": "13.346"
   },
   "esmodules": [
-    "./modules/token-action-hud-ed4e.mjs"
+    "scripts/action-handler.mjs",
+    "scripts/constants.mjs",
+    "scripts/defaults.mjs",
+    "scripts/init.mjs",
+    "scripts/roll-handler.mjs",
+    "scripts/settings.mjs",
+    "scripts/system-manager.mjs",
+    "scripts/utils.mjs"
   ],
   "styles": [
-    "./styles/tah-ed4e.css"
+    {
+      "src": "styles/tah-ed4e.css"
+    }
   ],
   "languages": [
     {
@@ -41,7 +49,7 @@
         "compatibility": [
           {
             "minimum": "0.8.1",
-            "verified": "0.8.1"
+            "verified": "0.8.2.2"
           }
         ]
       }
@@ -50,15 +58,11 @@
       {
         "id": "token-action-hud-core",
         "type": "module",
-        "compatibility": [
-          {
-            "minimum": "2",
-            "verified": "2.0.11"
-          }
-        ]
+        "compatibility": {
+            "minimum": "2.0"
+        }
       }
     ],
-    "optional": [],
     "flags": {
       "optional": []
     }
